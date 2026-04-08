@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
+import { track } from "@vercel/analytics";
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000").replace(/\/$/, "");
 
@@ -11,6 +12,17 @@ function Graph() {
   const graphUrl = useMemo(() => {
     if (!owner || !repo) return "";
     return `${API_BASE_URL}/${owner}/${repo}`;
+  }, [owner, repo]);
+
+  useEffect(() => {
+    if (!owner || !repo) return;
+
+    track("Repo Graph View", {
+      route_group: "repo_graph",
+      owner,
+      repo,
+      path_template: "/:owner/:repo",
+    });
   }, [owner, repo]);
 
   return (
