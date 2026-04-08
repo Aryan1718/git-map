@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 from app.config import Settings, get_settings
 from app.core.cache import BaseCache
+from app.services.discovermap_adapter import build_discovermap_payload
 from app.services import graph_builder
 from app.services.github import GitHubClient, GitHubError
 from app.services.repomap import RepomapError, extract_tags
@@ -101,6 +102,16 @@ async def analyze_repo_graph(
     return response
 
 
+async def analyze_repo_discovermap(
+    owner: str,
+    repo: str,
+    settings: Settings,
+    cache: BaseCache,
+) -> dict:
+    graph = await analyze_repo_graph(owner, repo, settings, cache)
+    return build_discovermap_payload(graph)
+
+
 @router.get("/health")
 async def health():
     return {"status": "ok"}
@@ -138,6 +149,32 @@ async def analyze_repo_api_route(
     cache: BaseCache = Depends(get_cache),
 ):
     return await analyze_repo_graph(owner, repo, settings, cache)
+
+
+@router.get("/api/discover/{owner}/{repo}/index")
+async def discovermap_index_route(
+    owner: str,
+    repo: str,
+    settings: Settings = Depends(get_settings),
+    cache: BaseCache = Depends(get_cache),
+):
+    payload = await analyze_repo_discovermap(owner, repo, settings, cache)
+    return payload["index"]
+
+
+@router.get("/api/discover/{owner}/{repo}/chunk/{chunk_id}")
+async def discovermap_chunk_route(
+    owner: str,
+    repo: str,
+    chunk_id: str,
+    settings: Settings = Depends(get_settings),
+    cache: BaseCache = Depends(get_cache),
+):
+    payload = await analyze_repo_discovermap(owner, repo, settings, cache)
+    chunk = payload["chunks"].get(chunk_id)
+    if chunk is None:
+        raise HTTPException(status_code=404, detail=f"Chunk not found: {chunk_id}")
+    return chunk
 
 
 @router.get("/{owner}/{repo}", response_class=HTMLResponse)

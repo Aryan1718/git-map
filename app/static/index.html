@@ -3,173 +3,350 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Repo Knowledge Graph</title>
+<title>DiscoverMap</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <style>
   :root {
-    --bg: #0d1320;
-    --bg-soft: rgba(12, 19, 32, 0.84);
-    --panel: #121b2d;
-    --panel-soft: rgba(18, 27, 45, 0.88);
-    --border: #21304c;
-    --border-strong: #34507c;
-    --text: #d8e4f8;
-    --text-soft: #a2b6d5;
-    --text-muted: #7083a3;
-    --shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
-    --teal: #59d0c2;
-    --teal-soft: #133a3c;
-    --amber: #f3a25d;
-    --amber-soft: #45250d;
-    --purple: #b29bff;
-    --purple-soft: #2d2452;
-    --gray: #aab6c9;
-    --gray-soft: #273243;
-    --link-contains: #455976;
-    --link-calls: #e58b47;
-    --link-ref: #8ba0ba;
-    --py-file-fill: #15314b;
-    --py-file-stroke: #6ec1ff;
-    --py-file-text: #d8f2ff;
-    --py-def-fill: #2b2554;
-    --py-def-stroke: #c5a8ff;
-    --py-def-text: #f0e7ff;
-    --py-class-fill: #0f4750;
-    --py-class-stroke: #68e0d2;
-    --py-class-text: #d6fffa;
-    --js-file-fill: #443310;
-    --js-file-stroke: #ffd166;
-    --js-file-text: #fff0bf;
-    --js-def-fill: #4a2416;
-    --js-def-stroke: #ff9c73;
-    --js-def-text: #ffe0d4;
-    --js-class-fill: #3a3a14;
-    --js-class-stroke: #d8ef72;
-    --js-class-text: #f8ffd8;
-    --ts-file-fill: #102e4c;
-    --ts-file-stroke: #62b7ff;
-    --ts-file-text: #d7ecff;
-    --ts-def-fill: #163c60;
-    --ts-def-stroke: #6fd3ff;
-    --ts-def-text: #d8f8ff;
-    --ts-class-fill: #262c63;
-    --ts-class-stroke: #9da5ff;
-    --ts-class-text: #e6e8ff;
-    --jsx-file-fill: #12343b;
-    --jsx-file-stroke: #53e0cc;
-    --jsx-file-text: #d5fff9;
-    --jsx-def-fill: #183f36;
-    --jsx-def-stroke: #6ff2a8;
-    --jsx-def-text: #ddffe8;
-    --jsx-class-fill: #1e3156;
-    --jsx-class-stroke: #83c3ff;
-    --jsx-class-text: #dcebff;
-    --misc-file-fill: #233143;
-    --misc-file-stroke: #aab6c9;
-    --misc-file-text: #e0e8f5;
-    --misc-def-fill: #3f2a4f;
-    --misc-def-stroke: #d0a8ff;
-    --misc-def-text: #f2e6ff;
-    --misc-class-fill: #294352;
-    --misc-class-stroke: #88d9ff;
-    --misc-class-text: #def6ff;
+    --bg: #07101b;
+    --bg-deep: #040811;
+    --surface: rgba(12, 18, 30, 0.68);
+    --surface-strong: rgba(13, 20, 34, 0.82);
+    --surface-soft: rgba(13, 19, 31, 0.48);
+    --surface-hover: rgba(19, 27, 44, 0.78);
+    --border: rgba(145, 170, 212, 0.16);
+    --border-strong: rgba(157, 189, 244, 0.28);
+    --text: #ecf3ff;
+    --text-soft: rgba(212, 224, 247, 0.78);
+    --text-muted: rgba(171, 189, 220, 0.52);
+    --shadow-lg: 0 24px 80px rgba(0, 0, 0, 0.45);
+    --shadow-md: 0 18px 50px rgba(0, 0, 0, 0.34);
+    --glass-blur: 22px;
+    --file-fill: #1f2246;
+    --file-stroke: #8a84f7;
+    --file-text: #d9d6ff;
+    --route-fill: #15302f;
+    --route-stroke: #38b7a7;
+    --route-text: #a8efe3;
+    --fn-fill: #3a2418;
+    --fn-stroke: #ec8d4a;
+    --fn-text: #ffd4b5;
+    --comp-fill: #24304d;
+    --comp-stroke: #84b0ff;
+    --comp-text: #d0defc;
+    --spotlight-x: 50%;
+    --spotlight-y: 42%;
   }
 
-  * { box-sizing: border-box; }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    height: 100%;
+  }
 
   body {
-    margin: 0;
-    min-height: 100vh;
-    font-family: "SF Pro Display", "Segoe UI", sans-serif;
+    font-family: "Sora", "SF Pro Display", "Segoe UI", sans-serif;
     color: var(--text);
     background:
-      radial-gradient(circle at top left, rgba(89, 208, 194, 0.10), transparent 30%),
-      radial-gradient(circle at top right, rgba(178, 155, 255, 0.12), transparent 24%),
-      linear-gradient(180deg, #0b111c 0%, #0d1320 100%);
-    display: flex;
-    flex-direction: column;
+      radial-gradient(circle at 18% 20%, rgba(76, 104, 255, 0.12), transparent 26%),
+      radial-gradient(circle at 82% 14%, rgba(25, 212, 197, 0.08), transparent 24%),
+      radial-gradient(circle at 50% 100%, rgba(138, 132, 247, 0.08), transparent 32%),
+      linear-gradient(180deg, #08111d 0%, #050914 100%);
     overflow: hidden;
   }
 
-  #topbar {
+  body::before,
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::before {
+    background:
+      radial-gradient(480px circle at var(--spotlight-x) var(--spotlight-y), rgba(107, 139, 255, 0.14), transparent 60%),
+      radial-gradient(340px circle at calc(var(--spotlight-x) + 8%) calc(var(--spotlight-y) - 10%), rgba(60, 208, 255, 0.08), transparent 58%);
+    opacity: 0.9;
+    transition: background-position 140ms ease;
+  }
+
+  body::after {
+    background:
+      linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 88%);
+    opacity: 0.36;
+  }
+
+  .ambient {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .ambient__aurora,
+  .ambient__beam,
+  .ambient__grain {
+    position: absolute;
+    inset: 0;
+  }
+
+  .ambient__aurora {
+    background:
+      radial-gradient(52% 36% at 50% 52%, rgba(90, 125, 255, 0.13), transparent 72%),
+      radial-gradient(32% 26% at 56% 40%, rgba(42, 197, 189, 0.08), transparent 72%);
+    filter: blur(36px);
+    animation: auroraShift 18s ease-in-out infinite alternate;
+  }
+
+  .ambient__beam {
+    inset: -20% -10%;
+    background:
+      linear-gradient(115deg, transparent 16%, rgba(99, 127, 255, 0.06) 32%, transparent 46%),
+      linear-gradient(72deg, transparent 24%, rgba(61, 214, 188, 0.035) 38%, transparent 52%);
+    filter: blur(12px);
+    animation: beamDrift 22s linear infinite;
+    opacity: 0.55;
+  }
+
+  .ambient__grain {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.028) 0.7px, transparent 0.7px);
+    background-size: 24px 24px;
+    opacity: 0.12;
+  }
+
+  .app-shell {
+    position: relative;
+    z-index: 1;
+    height: 100vh;
+    padding: 18px;
     display: flex;
+    flex-direction: column;
     gap: 16px;
+  }
+
+  .glass-card {
+    position: relative;
+    background: linear-gradient(180deg, rgba(16, 24, 39, 0.8) 0%, rgba(9, 15, 27, 0.56) 100%);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    backdrop-filter: blur(var(--glass-blur)) saturate(130%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(130%);
+    box-shadow: var(--shadow-md);
+  }
+
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 28%);
+    pointer-events: none;
+  }
+
+  #topbar {
+    display: grid;
+    grid-template-columns: minmax(240px, 1.1fr) minmax(360px, 1.45fr) auto;
     align-items: center;
-    padding: 14px 18px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg-soft);
-    backdrop-filter: blur(14px);
-    box-shadow: var(--shadow);
-    z-index: 2;
+    gap: 18px;
+    padding: 18px 22px;
+    min-height: 94px;
+    transition: transform 320ms cubic-bezier(.22, 1, .36, 1), opacity 320ms ease, border-color 180ms ease;
+  }
+
+  #topbar:hover {
+    border-color: var(--border-strong);
+  }
+
+  #brand {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(168, 193, 244, 0.7);
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(121, 151, 255, 0.92), rgba(77, 223, 210, 0.92));
+    box-shadow: 0 0 14px rgba(95, 141, 255, 0.5);
   }
 
   #brand h1 {
-    margin: 0;
-    font-size: 15px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: clamp(24px, 3vw, 34px);
+    line-height: 1;
+    letter-spacing: -0.05em;
+    font-weight: 600;
   }
 
   #brand p {
-    margin: 4px 0 0;
+    max-width: 38ch;
+    color: var(--text-soft);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  #control-stack {
+    display: grid;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  #repo-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  #repo-wrap,
+  #search-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    padding: 13px 16px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(6, 10, 18, 0.74), rgba(12, 17, 30, 0.58));
+    border: 1px solid rgba(145, 170, 212, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+
+  #repo-wrap:focus-within,
+  #search-wrap:focus-within {
+    border-color: rgba(135, 165, 255, 0.38);
+    background: linear-gradient(180deg, rgba(8, 13, 23, 0.88), rgba(14, 20, 34, 0.72));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 0 0 1px rgba(120, 149, 255, 0.12),
+      0 14px 40px rgba(65, 94, 186, 0.2);
+    transform: translateY(-1px);
+  }
+
+  .search-icon {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+    color: rgba(192, 208, 235, 0.62);
+  }
+
+  #repo-input,
+  #search {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.4;
+    font-family: inherit;
+  }
+
+  #repo-input::placeholder,
+  #search::placeholder {
+    color: rgba(171, 189, 220, 0.48);
+  }
+
+  .search-kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(145, 170, 212, 0.12);
+    background: rgba(255, 255, 255, 0.03);
     color: var(--text-muted);
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
-  #repo-form {
-    display: flex;
-    gap: 10px;
-    flex: 1;
-    max-width: 620px;
-  }
-
-  .field {
-    flex: 1;
-    border: 1px solid var(--border);
-    background: rgba(8, 14, 24, 0.92);
+  #repo-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 116px;
+    padding: 0 18px;
+    border-radius: 18px;
+    border: 1px solid rgba(145, 170, 212, 0.16);
+    background: linear-gradient(180deg, rgba(20, 29, 48, 0.84), rgba(9, 15, 27, 0.64));
     color: var(--text);
-    border-radius: 12px;
-    padding: 11px 14px;
-    font-size: 13px;
-    outline: none;
-  }
-
-  .field:focus {
-    border-color: var(--border-strong);
-    box-shadow: 0 0 0 3px rgba(89, 208, 194, 0.12);
-  }
-
-  #open-btn {
-    border: 1px solid #1e6e69;
-    background: linear-gradient(180deg, #175953 0%, #103e3a 100%);
-    color: #d7faf5;
-    border-radius: 12px;
-    padding: 0 16px;
-    font-size: 13px;
-    font-weight: 650;
+    font: inherit;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
   }
 
-  #open-btn:hover {
-    filter: brightness(1.05);
+  #repo-submit:hover {
+    transform: translateY(-1px);
+    border-color: rgba(157, 189, 244, 0.24);
+    background: linear-gradient(180deg, rgba(23, 34, 56, 0.92), rgba(11, 17, 29, 0.72));
   }
 
   #stats {
     display: flex;
-    gap: 10px;
     flex-wrap: wrap;
     justify-content: flex-end;
+    gap: 10px;
   }
 
   .stat {
-    padding: 6px 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 88px;
+    padding: 9px 12px;
     border-radius: 999px;
-    border: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(14, 20, 33, 0.8), rgba(9, 13, 24, 0.62));
+    border: 1px solid rgba(145, 170, 212, 0.12);
     color: var(--text-soft);
-    background: rgba(10, 16, 28, 0.8);
-    font-size: 11px;
+    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+  }
+
+  .stat:hover {
+    transform: translateY(-1px);
+    border-color: rgba(157, 189, 244, 0.24);
+    background: linear-gradient(180deg, rgba(18, 26, 44, 0.86), rgba(11, 17, 29, 0.72));
+  }
+
+  .stat__label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .stat__value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
   }
 
   #canvas-wrap {
@@ -177,316 +354,659 @@
     flex: 1;
     min-height: 0;
     overflow: hidden;
+    border-radius: 30px;
+    border: 1px solid rgba(145, 170, 212, 0.08);
+    background:
+      radial-gradient(circle at 50% 46%, rgba(88, 114, 232, 0.1), transparent 30%),
+      linear-gradient(180deg, rgba(6, 9, 17, 0.52), rgba(3, 6, 12, 0.2));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
   }
 
   #graph {
     width: 100%;
     height: 100%;
     display: block;
+    position: relative;
+    z-index: 2;
   }
 
-  #hint {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    max-width: 280px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    background: rgba(12, 19, 32, 0.84);
-    color: var(--text-soft);
-    font-size: 11px;
-    line-height: 1.5;
-    pointer-events: none;
-    backdrop-filter: blur(10px);
-  }
-
-  #hint strong {
-    color: #f1f6ff;
-  }
-
-  #loading {
+  .graph-glow,
+  .graph-vignette {
     position: absolute;
     inset: 0;
-    display: none;
-    place-items: center;
-    background: rgba(8, 12, 20, 0.58);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .graph-glow {
+    background:
+      radial-gradient(38% 30% at 50% 52%, rgba(100, 124, 255, 0.16), transparent 68%),
+      radial-gradient(26% 18% at 56% 48%, rgba(56, 183, 167, 0.08), transparent 72%);
+    filter: blur(28px);
+  }
+
+  .graph-vignette {
+    background:
+      linear-gradient(180deg, rgba(4, 8, 14, 0.04), rgba(4, 8, 14, 0.24)),
+      radial-gradient(circle at 50% 52%, transparent 54%, rgba(2, 5, 10, 0.36) 100%);
+  }
+
+  .floating-card {
+    position: absolute;
     z-index: 3;
+    transition:
+      transform 260ms cubic-bezier(.22, 1, .36, 1),
+      opacity 260ms ease,
+      border-color 180ms ease,
+      background 180ms ease;
   }
 
-  #loading.show {
-    display: grid;
+  .floating-card:hover {
+    border-color: var(--border-strong);
   }
 
-  #loading-card {
-    padding: 14px 18px;
-    border-radius: 14px;
-    border: 1px solid var(--border);
-    background: var(--panel-soft);
-    color: var(--text-soft);
-    box-shadow: var(--shadow);
+  #graph-hint {
+    top: 18px;
+    left: 18px;
+    width: min(340px, calc(100% - 36px));
+    padding: 18px 18px 16px;
   }
 
-  #details {
-    display: grid;
-    grid-template-columns: minmax(270px, 1.15fr) minmax(360px, 1.85fr);
-    gap: 18px;
-    padding: 16px 18px 18px;
-    border-top: 1px solid var(--border);
-    background: rgba(9, 14, 24, 0.92);
-    backdrop-filter: blur(12px);
-    min-height: 220px;
-    max-height: 38vh;
-    overflow: auto;
-  }
-
-  .panel {
-    background: var(--panel-soft);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 14px 16px;
-  }
-
-  .panel h2 {
-    margin: 0 0 10px;
-    font-size: 12px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .panel p {
-    margin: 0;
-    font-size: 13px;
-    color: var(--text-soft);
-    line-height: 1.6;
-  }
-
-  .title-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-
-  .pill {
+  .hint-kicker {
     display: inline-flex;
     align-items: center;
-    padding: 4px 8px;
-    border: 1px solid var(--border);
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(177, 198, 237, 0.74);
+  }
+
+  .hint-kicker::before {
+    content: '';
+    width: 7px;
+    height: 7px;
     border-radius: 999px;
-    font-size: 11px;
-    color: var(--text-soft);
-    background: rgba(10, 16, 28, 0.84);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    background: rgba(105, 171, 255, 0.92);
+    box-shadow: 0 0 10px rgba(105, 171, 255, 0.48);
   }
 
-  .node-name {
+  .hint-title {
     font-size: 16px;
-    font-weight: 650;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
   }
 
-  .node-subtitle {
-    margin: 0 0 14px;
+  .hint-copy {
     color: var(--text-soft);
-    font-size: 12px;
-    line-height: 1.6;
-    word-break: break-word;
-  }
-
-  .meta-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 10px;
-  }
-
-  .meta-card {
-    padding: 10px 12px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    background: rgba(8, 14, 24, 0.84);
-  }
-
-  .meta-card .k {
-    color: var(--text-muted);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 6px;
-  }
-
-  .meta-card .v {
-    color: var(--text);
     font-size: 13px;
-    line-height: 1.4;
-    word-break: break-word;
+    line-height: 1.65;
+    margin-bottom: 14px;
   }
 
-  .section {
-    margin-top: 14px;
-  }
-
-  .section h3 {
-    margin: 0 0 8px;
-    color: var(--text-muted);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .chips {
+  .hint-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
   }
 
-  .chip {
-    padding: 6px 9px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: rgba(8, 14, 24, 0.84);
-    color: var(--text-soft);
+  .hint-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(145, 170, 212, 0.08);
+    color: rgba(212, 224, 247, 0.84);
     font-size: 12px;
   }
 
-  .empty {
+  .hint-chip__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(122, 154, 255, 1), rgba(65, 224, 200, 1));
+    box-shadow: 0 0 12px rgba(91, 140, 255, 0.35);
+  }
+
+  #detail-toggle {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    border: 1px solid rgba(145, 170, 212, 0.14);
+    border-radius: 999px;
+    background: rgba(8, 12, 21, 0.74);
+    color: var(--text);
+    font: inherit;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    backdrop-filter: blur(16px);
+    box-shadow: var(--shadow-md);
+    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, opacity 200ms ease;
+  }
+
+  #detail-toggle:hover {
+    transform: translateY(-1px);
+    border-color: rgba(157, 189, 244, 0.26);
+    background: rgba(11, 16, 28, 0.86);
+  }
+
+  #detail-toggle .toggle-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(126, 154, 255, 1), rgba(59, 219, 208, 1));
+    box-shadow: 0 0 14px rgba(95, 141, 255, 0.48);
+  }
+
+  #inspector-shell {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    bottom: 18px;
+    width: min(430px, calc(100% - 36px));
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  #detail-panel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 18px;
+    pointer-events: auto;
+    overflow: hidden;
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  body.details-hidden #detail-panel {
+    transform: translateX(24px) scale(0.98);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .inspector-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .inspector-kicker {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(180, 199, 238, 0.7);
+    margin-bottom: 8px;
+  }
+
+  .inspector-title {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+  }
+
+  .inspector-subtitle {
+    margin-top: 5px;
+    color: var(--text-soft);
+    font-size: 12px;
+    line-height: 1.55;
+    max-width: 28ch;
+  }
+
+  .inspector-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(145, 170, 212, 0.12);
+    color: var(--text-soft);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .inspector-badge__pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(65, 224, 200, 0.9);
+    box-shadow: 0 0 12px rgba(65, 224, 200, 0.38);
+  }
+
+  .inspector-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding-right: 6px;
+  }
+
+  .inspector-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .inspector-scroll::-webkit-scrollbar-thumb {
+    background: rgba(145, 170, 212, 0.15);
+    border-radius: 999px;
+  }
+
+  #detail-status,
+  #detail-content {
+    position: relative;
+    padding: 16px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(15, 23, 38, 0.82), rgba(9, 15, 27, 0.62));
+    border: 1px solid rgba(145, 170, 212, 0.11);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+
+  #detail-status {
+    margin-bottom: 14px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .status-copy {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-soft);
+  }
+
+  .detail-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .detail-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(145, 170, 212, 0.12);
+    background: rgba(255, 255, 255, 0.03);
+    color: rgba(214, 226, 246, 0.82);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .detail-pill::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(122, 154, 255, 1), rgba(59, 219, 208, 1));
+    box-shadow: 0 0 10px rgba(95, 141, 255, 0.36);
+  }
+
+  .detail-name {
+    font-size: 24px;
+    line-height: 1.08;
+    letter-spacing: -0.05em;
+    font-weight: 600;
+    color: var(--text);
+    word-break: break-word;
+  }
+
+  .detail-subtitle {
+    font-size: 12px;
+    color: var(--text-soft);
+    line-height: 1.7;
+    margin-bottom: 18px;
+    word-break: break-word;
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .detail-card {
+    padding: 12px 13px;
+    border-radius: 16px;
+    border: 1px solid rgba(145, 170, 212, 0.09);
+    background: rgba(255, 255, 255, 0.025);
+  }
+
+  .detail-card .k {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .detail-card .v {
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--text);
+    word-break: break-word;
+  }
+
+  .detail-section + .detail-section {
+    margin-top: 16px;
+  }
+
+  .detail-section h3 {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .detail-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .detail-chip {
+    padding: 8px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(145, 170, 212, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+    color: rgba(218, 228, 247, 0.84);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .detail-empty {
     color: var(--text-muted);
     font-size: 12px;
+    line-height: 1.6;
   }
 
   .link {
     fill: none;
     stroke-linecap: round;
+    transition: opacity 180ms ease, stroke-width 180ms ease;
   }
 
   .node {
     cursor: pointer;
+    transition: opacity 180ms ease;
+  }
+
+  .node-shape,
+  .node-label,
+  .node-badge {
+    transition: opacity 180ms ease, stroke-width 180ms ease, filter 180ms ease, transform 180ms ease;
   }
 
   .node-label {
     pointer-events: none;
-    font-weight: 550;
-    paint-order: stroke;
-    stroke: rgba(4, 8, 14, 0.9);
-    stroke-width: 4px;
-    stroke-linejoin: round;
+    font-weight: 500;
   }
 
-  @media (max-width: 980px) {
+  @keyframes auroraShift {
+    0% {
+      transform: translate3d(-1.5%, -1%, 0) scale(1);
+      opacity: 0.75;
+    }
+    100% {
+      transform: translate3d(1.5%, 1.5%, 0) scale(1.04);
+      opacity: 1;
+    }
+  }
+
+  @keyframes beamDrift {
+    0% {
+      transform: translate3d(-3%, 0, 0);
+    }
+    100% {
+      transform: translate3d(3%, 0, 0);
+    }
+  }
+
+  @media (max-width: 1200px) {
     #topbar {
-      flex-wrap: wrap;
-      align-items: flex-start;
-    }
-
-    #repo-form,
-    #stats {
-      width: 100%;
-      max-width: none;
-    }
-
-    #details {
       grid-template-columns: 1fr;
-      max-height: 42vh;
+      align-items: stretch;
     }
 
-    #hint {
-      left: 14px;
-      right: auto;
-      max-width: 250px;
+    #stats {
+      justify-content: flex-start;
+    }
+
+    #inspector-shell {
+      width: min(390px, calc(100% - 36px));
+    }
+  }
+
+  @media (max-width: 820px) {
+    .app-shell {
+      padding: 12px;
+      gap: 12px;
+    }
+
+    #topbar {
+      padding: 16px;
+      min-height: auto;
+    }
+
+    #repo-form {
+      grid-template-columns: 1fr;
+    }
+
+    #graph-hint {
+      width: calc(100% - 24px);
+      left: 12px;
+      top: 12px;
+    }
+
+    #inspector-shell {
+      left: 12px;
+      right: 12px;
+      top: auto;
+      bottom: 70px;
+      width: auto;
+      height: min(56vh, 460px);
+    }
+
+    #detail-toggle {
+      right: 12px;
+      bottom: 12px;
+    }
+
+    .detail-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
   }
 </style>
 </head>
 <body>
-<div id="topbar">
-  <div id="brand">
-    <h1>Repo Knowledge Graph</h1>
-    <p>DiscoverMap-style repo view for GitHub source graphs</p>
-  </div>
-  <form id="repo-form">
-    <input id="repo-input" class="field" type="text" placeholder="owner/repo or https://github.com/owner/repo">
-    <button id="open-btn" type="submit">Open Graph</button>
-  </form>
-  <div id="stats">
-    <span class="stat" id="s-repo">Repo: -</span>
-    <span class="stat" id="s-files">Files: -</span>
-    <span class="stat" id="s-nodes">Nodes: -</span>
-    <span class="stat" id="s-links">Links: -</span>
-  </div>
+<div class="ambient" aria-hidden="true">
+  <div class="ambient__aurora"></div>
+  <div class="ambient__beam"></div>
+  <div class="ambient__grain"></div>
 </div>
 
-<div id="canvas-wrap">
-  <svg id="graph"></svg>
-  <div id="hint">
-    <strong>Language glow:</strong> `.py` blue, `.js` gold, `.ts` cyan, `.jsx/.tsx` mint.<br>
-    Files stay visible by default.<br>
-    Click a file to expand local symbols.
-  </div>
-  <div id="loading">
-    <div id="loading-card">Loading repository graph...</div>
-  </div>
-</div>
+<div class="app-shell">
+  <header id="topbar" class="glass-card">
+    <div id="brand">
+      <div class="eyebrow">Code Exploration System</div>
+      <h1>DiscoverMap</h1>
+      <p>The graph stays primary. GitHub analysis feeds a DiscoverMap-style interaction layer so local structure reads first.</p>
+    </div>
 
-<div id="details">
-  <div class="panel" id="status-panel"></div>
-  <div class="panel" id="detail-panel"></div>
+    <div id="control-stack">
+      <form id="repo-form">
+        <label id="repo-wrap" for="repo-input" aria-label="Repository">
+          <svg class="search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M3.5 4.5h5m-5 5h13m-13 5h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <input id="repo-input" type="text" placeholder="owner/repo or https://github.com/owner/repo">
+        </label>
+        <button id="repo-submit" type="submit">Open Repo</button>
+      </form>
+
+      <label id="search-wrap" for="search" aria-label="Search graph">
+        <svg class="search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M8.75 15.5a6.75 6.75 0 1 1 0-13.5 6.75 6.75 0 0 1 0 13.5ZM13.5 13.5l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <input id="search" type="text" placeholder="Search files, routes, functions, components">
+        <span class="search-kbd">Esc</span>
+      </label>
+    </div>
+
+    <div id="stats">
+      <span class="stat" id="s-files"><span class="stat__label">Files</span><span class="stat__value">-</span></span>
+      <span class="stat" id="s-fns"><span class="stat__label">Fn</span><span class="stat__value">-</span></span>
+      <span class="stat" id="s-comps"><span class="stat__label">Comp</span><span class="stat__value">-</span></span>
+      <span class="stat" id="s-routes"><span class="stat__label">Routes</span><span class="stat__value">-</span></span>
+    </div>
+  </header>
+
+  <main id="canvas-wrap">
+    <div class="graph-glow" aria-hidden="true"></div>
+    <div class="graph-vignette" aria-hidden="true"></div>
+    <svg id="graph"></svg>
+
+    <aside id="graph-hint" class="floating-card glass-card">
+      <div class="hint-kicker">Explorer Guide</div>
+      <div class="hint-title">Start broad, then commit to a local neighborhood.</div>
+      <div class="hint-copy">Overview shows files and route bridges when available. Hover previews local context. Clicking a node commits focus so unrelated graph regions fade away.</div>
+      <div class="hint-actions">
+        <span class="hint-chip"><span class="hint-chip__dot"></span>Overview maps files and route bridges</span>
+        <span class="hint-chip"><span class="hint-chip__dot"></span>Hover previews structure before drilling in</span>
+        <span class="hint-chip"><span class="hint-chip__dot"></span>Click locks focus and expands local internals</span>
+      </div>
+    </aside>
+
+    <div id="inspector-shell">
+      <section id="detail-panel" class="glass-card" aria-live="polite">
+        <div class="inspector-header">
+          <div>
+            <div class="inspector-kicker">Contextual Inspector</div>
+            <div class="inspector-title">Selection state</div>
+            <div class="inspector-subtitle">Focused metadata, structural relationships, and local exploration cues stay anchored beside the graph.</div>
+          </div>
+          <div class="inspector-badge"><span class="inspector-badge__pulse"></span><span id="inspector-mode">Overview</span></div>
+        </div>
+        <div class="inspector-scroll">
+          <div id="detail-status"></div>
+          <div id="detail-content"></div>
+        </div>
+      </section>
+    </div>
+
+    <button id="detail-toggle" type="button" aria-pressed="true">
+      <span class="toggle-dot"></span>
+      <span id="detail-toggle-label">Hide Inspector</span>
+    </button>
+  </main>
 </div>
 
 <script>
-const TYPE_THEME = {
-  file: { fill: '#12363a', stroke: '#59d0c2', text: '#d4fff8', size: 24 },
-  def: { fill: '#45250d', stroke: '#f3a25d', text: '#ffe1c6', size: 12 },
-  class: { fill: '#2d2452', stroke: '#b29bff', text: '#e8ddff', size: 14 },
-  ref: { fill: '#273243', stroke: '#aab6c9', text: '#e0e8f5', size: 10 },
+const NODE_TYPES = {
+  file: { tier: 1, defaultVisible: true, size: 30, labelFontSize: 12, fill: '#1f2246', stroke: '#8a84f7', text: '#d9d6ff', badge: true },
+  route: { tier: 2, defaultVisible: true, size: 16, labelFontSize: 11, fill: '#15302f', stroke: '#38b7a7', text: '#a8efe3', diamond: true },
+  fn: { tier: 3, defaultVisible: false, expandable: true, parentType: 'file', size: 11, labelFontSize: 10, fill: '#3a2418', stroke: '#ec8d4a', text: '#ffd4b5' },
+  comp: { tier: 3, defaultVisible: false, expandable: true, parentType: 'file', size: 12, labelFontSize: 10, fill: '#24304d', stroke: '#84b0ff', text: '#d0defc' },
 }
 
 const LANGUAGE_THEME = {
   py: {
-    file: { fill: '#15314b', stroke: '#6ec1ff', text: '#d8f2ff' },
-    def: { fill: '#2b2554', stroke: '#c5a8ff', text: '#f0e7ff' },
-    class: { fill: '#0f4750', stroke: '#68e0d2', text: '#d6fffa' },
+    file: { fill: '#1f2246', stroke: '#8a84f7', text: '#d9d6ff', badge: '#c4b5fd' },
+    fn: { fill: '#37213b', stroke: '#f472b6', text: '#ffd3ec', badge: '#f9a8d4' },
+    comp: { fill: '#20324d', stroke: '#60a5fa', text: '#d5e7ff', badge: '#93c5fd' },
   },
   js: {
-    file: { fill: '#443310', stroke: '#ffd166', text: '#fff0bf' },
-    def: { fill: '#4a2416', stroke: '#ff9c73', text: '#ffe0d4' },
-    class: { fill: '#3a3a14', stroke: '#d8ef72', text: '#f8ffd8' },
+    file: { fill: '#3b2d11', stroke: '#fbbf24', text: '#fde7a5', badge: '#fde047' },
+    fn: { fill: '#3b2314', stroke: '#fb923c', text: '#ffd9bf', badge: '#fdba74' },
+    comp: { fill: '#12353a', stroke: '#2dd4bf', text: '#baf7ee', badge: '#5eead4' },
   },
   ts: {
-    file: { fill: '#102e4c', stroke: '#62b7ff', text: '#d7ecff' },
-    def: { fill: '#163c60', stroke: '#6fd3ff', text: '#d8f8ff' },
-    class: { fill: '#262c63', stroke: '#9da5ff', text: '#e6e8ff' },
+    file: { fill: '#132f48', stroke: '#38bdf8', text: '#c8ecff', badge: '#7dd3fc' },
+    fn: { fill: '#173053', stroke: '#60a5fa', text: '#d7e7ff', badge: '#93c5fd' },
+    comp: { fill: '#183842', stroke: '#22d3ee', text: '#c9f9ff', badge: '#67e8f9' },
   },
-  jsx: {
-    file: { fill: '#12343b', stroke: '#53e0cc', text: '#d5fff9' },
-    def: { fill: '#183f36', stroke: '#6ff2a8', text: '#ddffe8' },
-    class: { fill: '#1e3156', stroke: '#83c3ff', text: '#dcebff' },
-  },
-  misc: {
-    file: { fill: '#233143', stroke: '#aab6c9', text: '#e0e8f5' },
-    def: { fill: '#3f2a4f', stroke: '#d0a8ff', text: '#f2e6ff' },
-    class: { fill: '#294352', stroke: '#88d9ff', text: '#def6ff' },
+  unknown: {
+    file: { fill: '#2a2f3b', stroke: '#94a3b8', text: '#dbe2ee', badge: '#cbd5e1' },
+    fn: { fill: '#34303f', stroke: '#a78bfa', text: '#e8defe', badge: '#c4b5fd' },
+    comp: { fill: '#233247', stroke: '#84b0ff', text: '#d0defc', badge: '#a5bffb' },
   },
 }
 
-const LINK_STYLE = {
-  contains: { stroke: '#455976', width: 1.05, dash: '3,5', opacity: 0.52 },
-  calls: { stroke: '#e58b47', width: 1.55, dash: null, opacity: 0.74 },
+const EDGE_STYLE = {
+  import: { stroke: '#55607a', width: 1.3, dash: '4,5', opacity: 0.38, marker: 'url(#arr-gray)' },
+  api_call: { stroke: '#38b7a7', width: 1.8, dash: null, opacity: 0.72, marker: 'url(#arr-green)' },
+  handles: { stroke: '#5bc7bb', width: 1.8, dash: null, opacity: 0.78, marker: 'url(#arr-green)' },
+  contains: { stroke: '#46506b', width: 1.0, dash: '2,5', opacity: 0.55, marker: null },
+  call: { stroke: '#ec8d4a', width: 1.2, dash: '4,4', opacity: 0.72, marker: 'url(#arr-orange)' },
+  uses: { stroke: '#84b0ff', width: 1.2, dash: '4,4', opacity: 0.64, marker: 'url(#arr-blue)' },
 }
+
+const DRAW_ORDER = { fn: 1, comp: 2, route: 3, file: 4 }
+const DEFAULT_STATUS = 'Overview mode keeps the graph broad. Select a file, route, function, or component to fade unrelated regions and surface its local neighborhood.'
+const CHILD_RADIUS = 86
 
 const state = {
-  graph: null,
-  visible: { nodes: [], links: [] },
   activeNodeId: null,
-  expandedFileId: null,
-  searchTerm: '',
+  expandedNodeId: null,
+  hoveredNodeId: null,
+  visibleNodeIds: new Set(),
+  visibleEdgeIds: new Set(),
+  repo: null,
 }
 
+const fullGraph = {
+  nodesById: new Map(),
+  edgesById: new Map(),
+  childrenByParent: new Map(),
+  primaryNodeIds: new Set(),
+  routeIds: new Set(),
+  fileIds: new Set(),
+}
+
+let visibleGraph = { nodes: [], links: [], adjacency: new Map() }
+let simulation
 let svg
-let zoomLayer
+let zoomBehavior
 let linkLayer
 let nodeLayer
-let simulation
+let currentTransform = d3.zoomIdentity
+let detailPanelVisible = true
+let searchTimer = null
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -494,6 +1014,18 @@ function escapeHtml(value) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
+}
+
+function edgeKey(edge) {
+  return `${edge.etype}:${edge.source}->${edge.target}`
+}
+
+function linkEndpointId(endpoint) {
+  return typeof endpoint === 'object' ? endpoint.id : endpoint
+}
+
+function fileName(path) {
+  return (path || '').split('/').pop() || path
 }
 
 function currentRepoFromPath() {
@@ -505,7 +1037,6 @@ function currentRepoFromPath() {
 function normalizeRepoInput(value) {
   const trimmed = value.trim()
   if (!trimmed) return null
-
   try {
     const url = new URL(trimmed)
     if (url.hostname === 'github.com') {
@@ -513,447 +1044,996 @@ function normalizeRepoInput(value) {
       if (parts.length >= 2) return { owner: parts[0], repo: parts[1] }
     }
   } catch (_) {}
-
   const parts = trimmed.replace(/^\/+|\/+$/g, '').split('/')
   if (parts.length >= 2) return { owner: parts[0], repo: parts[1] }
   return null
 }
 
-function setLoading(message, show) {
-  const overlay = document.getElementById('loading')
-  document.getElementById('loading-card').textContent = message
-  overlay.classList.toggle('show', show)
+function normalizeLanguage(language, path) {
+  const raw = String(language || '').toLowerCase()
+  if (raw === 'python' || raw === 'py') return 'py'
+  if (raw === 'typescript' || raw === 'ts' || raw === 'tsx') return 'ts'
+  if (raw === 'javascript' || raw === 'js' || raw === 'jsx') return 'js'
+  const lowerPath = String(path || '').toLowerCase()
+  if (lowerPath.endsWith('.py')) return 'py'
+  if (lowerPath.endsWith('.ts') || lowerPath.endsWith('.tsx')) return 'ts'
+  if (lowerPath.endsWith('.js') || lowerPath.endsWith('.jsx') || lowerPath.endsWith('.mjs') || lowerPath.endsWith('.cjs')) return 'js'
+  return 'unknown'
 }
 
-function setStatusHtml(html) {
-  document.getElementById('status-panel').innerHTML = html
-}
-
-function setDetailHtml(html) {
-  document.getElementById('detail-panel').innerHTML = html
-}
-
-function resetPanels() {
-  setStatusHtml(`
-    <h2>Status</h2>
-    <p>Paste a GitHub URL or open <code>/owner/repo</code>. This page fetches the repo JSON from the backend and renders a force graph similar to DiscoverMap.</p>
-  `)
-  setDetailHtml(`
-    <h2>Selection</h2>
-    <p>Nothing selected yet. Click a file or symbol to inspect connected nodes, source file, line number, and relationship counts.</p>
-  `)
-}
-
-function updateStats(meta) {
-  document.getElementById('s-repo').textContent = `Repo: ${meta ? `${meta.owner}/${meta.repo}` : '-'}`
-  document.getElementById('s-files').textContent = `Files: ${meta?.file_count ?? '-'}`
-  document.getElementById('s-nodes').textContent = `Nodes: ${meta?.node_count ?? '-'}`
-  document.getElementById('s-links').textContent = `Links: ${meta?.link_count ?? '-'}`
-}
-
-function enrichGraph(payload) {
-  const nodesById = new Map()
-  const childrenByFile = new Map()
-  const parentByChild = new Map()
-  const linksByNode = new Map()
-
-  payload.nodes.forEach(node => {
-    const copy = { ...node }
-    copy.type = TYPE_THEME[copy.type] ? copy.type : 'ref'
-    nodesById.set(copy.id, copy)
-    if (!linksByNode.has(copy.id)) linksByNode.set(copy.id, [])
-  })
-
-  payload.links.forEach((link, index) => {
-    const copy = { ...link, id: `${link.type}:${link.source}->${link.target}:${index}` }
-    if (!linksByNode.has(copy.source)) linksByNode.set(copy.source, [])
-    if (!linksByNode.has(copy.target)) linksByNode.set(copy.target, [])
-    linksByNode.get(copy.source).push(copy)
-    linksByNode.get(copy.target).push(copy)
-    if (copy.type === 'contains') {
-      if (!childrenByFile.has(copy.source)) childrenByFile.set(copy.source, [])
-      childrenByFile.get(copy.source).push(copy.target)
-      parentByChild.set(copy.target, copy.source)
-    }
-  })
-
-  payload.nodes.forEach(node => {
-    if (!parentByChild.has(node.id) && node.file && nodesById.has(node.file)) {
-      parentByChild.set(node.id, node.file)
-      if (!childrenByFile.has(node.file)) childrenByFile.set(node.file, [])
-      childrenByFile.get(node.file).push(node.id)
-    }
-  })
-
-  const fileIds = payload.nodes.filter(node => node.type === 'file').map(node => node.id)
-  return { ...payload, nodesById, childrenByFile, parentByChild, linksByNode, fileIds }
-}
-
-function fileName(path) {
-  return String(path || '').split('/').pop() || path
-}
-
-function extensionFamily(path) {
-  const lower = String(path || '').toLowerCase()
-  if (lower.endsWith('.py')) return 'py'
-  if (lower.endsWith('.jsx') || lower.endsWith('.tsx')) return 'jsx'
-  if (lower.endsWith('.ts')) return 'ts'
-  if (lower.endsWith('.js') || lower.endsWith('.mjs') || lower.endsWith('.cjs')) return 'js'
-  return 'misc'
-}
-
-function nodeFamily(node) {
-  return extensionFamily(node.file || node.id)
-}
-
-function themeForNode(node) {
-  const family = LANGUAGE_THEME[nodeFamily(node)] || LANGUAGE_THEME.misc
-  return family[node.type] || TYPE_THEME[node.type] || TYPE_THEME.ref
-}
-
-function computeVisibleGraph() {
-  if (!state.graph) return { nodes: [], links: [] }
-
-  const search = state.searchTerm.trim().toLowerCase()
-  const visibleIds = new Set(state.graph.fileIds)
-
-  if (state.expandedFileId) {
-    for (const childId of state.graph.childrenByFile.get(state.expandedFileId) || []) {
-      visibleIds.add(childId)
-    }
+function nodeTheme(node) {
+  if (node.type === 'route') {
+    return { fill: NODE_TYPES.route.fill, stroke: NODE_TYPES.route.stroke, text: NODE_TYPES.route.text, badge: '#a8efe3' }
   }
+  const lang = normalizeLanguage(node.lang, node.fullPath || node.fileId || node.id)
+  const theme = LANGUAGE_THEME[lang] || LANGUAGE_THEME.unknown
+  return theme[node.type] || LANGUAGE_THEME.unknown[node.type] || LANGUAGE_THEME.unknown.file
+}
 
-  if (search) {
-    for (const node of state.graph.nodes) {
-      const haystack = `${node.label} ${node.id} ${node.file || ''}`.toLowerCase()
-      if (haystack.includes(search)) {
-        visibleIds.add(node.id)
-        const parentId = state.graph.parentByChild.get(node.id)
-        if (parentId) visibleIds.add(parentId)
-        for (const link of state.graph.linksByNode.get(node.id) || []) {
-          visibleIds.add(link.source)
-          visibleIds.add(link.target)
+function nodeLabelPath(ref) {
+  return ref ? ref.split('::')[1] || '' : ''
+}
+
+function nodeLabelName(ref) {
+  return ref ? ref.split('::').pop() || '' : ''
+}
+
+function childNodeId(fileId, type, name) {
+  return `${fileId}::${type}::${name}`
+}
+
+function refToChildNodeId(ref, type) {
+  const filePath = nodeLabelPath(ref)
+  const name = nodeLabelName(ref)
+  return filePath && name ? childNodeId(filePath, type, name) : null
+}
+
+function resetGraphState() {
+  state.activeNodeId = null
+  state.expandedNodeId = null
+  state.hoveredNodeId = null
+  state.visibleNodeIds = new Set()
+  state.visibleEdgeIds = new Set()
+  visibleGraph = { nodes: [], links: [], adjacency: new Map() }
+  fullGraph.nodesById.clear()
+  fullGraph.edgesById.clear()
+  fullGraph.childrenByParent.clear()
+  fullGraph.primaryNodeIds.clear()
+  fullGraph.routeIds.clear()
+  fullGraph.fileIds.clear()
+}
+
+function addNode(node) {
+  const existing = fullGraph.nodesById.get(node.id)
+  if (existing) return existing
+  fullGraph.nodesById.set(node.id, node)
+  if (NODE_TYPES[node.type]?.defaultVisible) fullGraph.primaryNodeIds.add(node.id)
+  if (node.type === 'file') fullGraph.fileIds.add(node.id)
+  if (node.type === 'route') fullGraph.routeIds.add(node.id)
+  if (node.parentId) {
+    if (!fullGraph.childrenByParent.has(node.parentId)) fullGraph.childrenByParent.set(node.parentId, [])
+    fullGraph.childrenByParent.get(node.parentId).push(node.id)
+  }
+  return node
+}
+
+function addEdge(edge) {
+  const key = edgeKey(edge)
+  if (!fullGraph.edgesById.has(key)) fullGraph.edgesById.set(key, { ...edge, id: key })
+}
+
+function buildFullGraph(index, chunks) {
+  resetGraphState()
+  const routesChunk = chunks.chunk_routes || { routes: {} }
+  const fileEntries = Object.entries(index.file_map || {})
+  const routeEntries = Object.entries(index.route_map || {})
+  const wrap = document.getElementById('canvas-wrap')
+  const width = wrap.clientWidth
+  const height = wrap.clientHeight
+  const fileCount = Math.max(fileEntries.length, 1)
+  const routeCount = Math.max(routeEntries.length, 1)
+  const fileRadius = Math.min(width, height) * 0.29
+
+  fileEntries.forEach(([path, chunkId], indexPosition) => {
+    const chunk = chunks[chunkId] || {}
+    const fileData = chunk.files?.[path] || {}
+    const lang = normalizeLanguage(fileData.language, path)
+    const angle = (indexPosition / fileCount) * Math.PI * 2 - Math.PI / 2
+    addNode({
+      id: path,
+      type: 'file',
+      lang,
+      label: fileName(path),
+      fullPath: path,
+      chunkId,
+      r: NODE_TYPES.file.size,
+      expanded: false,
+      functionCount: Object.keys(fileData.functions || {}).length,
+      componentCount: Object.keys(fileData.components || {}).length,
+      imports: fileData.imports || [],
+      routeConnections: [],
+      x: width / 2 + Math.cos(angle) * fileRadius,
+      y: height / 2 + Math.sin(angle) * fileRadius,
+    })
+
+    Object.entries(fileData.functions || {}).forEach(([name, fn], fnIndex) => {
+      addNode({
+        id: childNodeId(path, 'fn', name),
+        type: 'fn',
+        parentId: path,
+        fileId: path,
+        lang,
+        label: name,
+        fullPath: `${path}::${name}`,
+        signature: fn.signature || fn.display || name,
+        calls: fn.calls || [],
+        called_by: fn.called_by || [],
+        metadata: fn,
+        orbitAngle: ((fnIndex + 0.5) / Math.max(Object.keys(fileData.functions || {}).length + Object.keys(fileData.components || {}).length, 1)) * Math.PI * 2 - Math.PI / 2,
+        orbitRadius: CHILD_RADIUS,
+        r: NODE_TYPES.fn.size,
+      })
+      addEdge({ source: path, target: childNodeId(path, 'fn', name), etype: 'contains' })
+    })
+
+    const fnCount = Object.keys(fileData.functions || {}).length
+    Object.entries(fileData.components || {}).forEach(([name, comp], compIndex) => {
+      addNode({
+        id: childNodeId(path, 'comp', name),
+        type: 'comp',
+        parentId: path,
+        fileId: path,
+        lang,
+        label: name,
+        fullPath: `${path}::${name}`,
+        api_calls: comp.api_calls || [],
+        uses: comp.uses || [],
+        metadata: comp,
+        orbitAngle: ((fnCount + compIndex + 0.5) / Math.max(fnCount + Object.keys(fileData.components || {}).length, 1)) * Math.PI * 2 - Math.PI / 2,
+        orbitRadius: CHILD_RADIUS,
+        r: NODE_TYPES.comp.size,
+      })
+      addEdge({ source: path, target: childNodeId(path, 'comp', name), etype: 'contains' })
+    })
+  })
+
+  routeEntries.forEach(([routeId], routeIndex) => {
+    const routeData = routesChunk.routes?.[routeId] || {}
+    const routeSpread = Math.max(routeCount - 1, 1)
+    addNode({
+      id: routeId,
+      type: 'route',
+      label: routeId,
+      fullPath: routeId,
+      chunkId: 'chunk_routes',
+      r: NODE_TYPES.route.size,
+      method: routeData.method,
+      path: routeData.path,
+      handler_ref: routeData.handler_ref,
+      frontend_ref: routeData.frontend_ref,
+      routeCalls: routeData.calls || [],
+      routeIndex,
+      x: width * (0.12 + (0.76 * routeIndex) / routeSpread),
+      y: height * 0.2,
+    })
+  })
+
+  for (const chunk of Object.values(chunks)) {
+    for (const [filePath, fileData] of Object.entries(chunk.files || {})) {
+      for (const importedPath of fileData.imports || []) {
+        if (fullGraph.nodesById.has(filePath) && fullGraph.nodesById.has(importedPath)) {
+          addEdge({ source: filePath, target: importedPath, etype: 'import' })
         }
       }
     }
   }
 
-  const nodes = state.graph.nodes
-    .filter(node => visibleIds.has(node.id))
-    .map(node => ({ ...node }))
+  Object.entries(routesChunk.routes || {}).forEach(([routeId, routeData]) => {
+    const frontendFile = nodeLabelPath(routeData.frontend_ref)
+    const handlerFile = nodeLabelPath(routeData.handler_ref)
+    if (frontendFile && fullGraph.nodesById.has(frontendFile)) {
+      addEdge({ source: frontendFile, target: routeId, etype: 'api_call' })
+      fullGraph.nodesById.get(frontendFile).routeConnections.push(routeId)
+    }
+    if (handlerFile && fullGraph.nodesById.has(handlerFile)) {
+      addEdge({ source: routeId, target: handlerFile, etype: 'handles' })
+      fullGraph.nodesById.get(handlerFile).routeConnections.push(routeId)
+    }
+  })
 
-  const links = state.graph.links
-    .filter(link => visibleIds.has(link.source) && visibleIds.has(link.target))
-    .filter(link => {
-      if (link.type !== 'contains') return true
-      return state.expandedFileId === link.source || search.length > 0
-    })
-    .map(link => ({ ...link }))
-
-  return { nodes, links }
-}
-
-function nodeOpacity(node) {
-  if (!state.searchTerm) return 1
-  const haystack = `${node.label} ${node.id} ${node.file || ''}`.toLowerCase()
-  return haystack.includes(state.searchTerm.toLowerCase()) ? 1 : 0.22
-}
-
-function linkOpacity(link) {
-  if (!state.activeNodeId) return LINK_STYLE[link.type]?.opacity ?? 0.4
-  return link.source === state.activeNodeId || link.target === state.activeNodeId
-    ? Math.max(LINK_STYLE[link.type]?.opacity ?? 0.4, 0.92)
-    : 0.08
-}
-
-function relatedNodeIds(nodeId) {
-  const related = new Set()
-  for (const link of state.graph.linksByNode.get(nodeId) || []) {
-    related.add(link.source)
-    related.add(link.target)
+  for (const node of fullGraph.nodesById.values()) {
+    if (node.type === 'fn') {
+      for (const call of node.calls || []) {
+        if (typeof call !== 'string') {
+          const targetId = refToChildNodeId(call.ref, 'fn')
+          if (targetId && fullGraph.nodesById.has(targetId)) addEdge({ source: node.id, target: targetId, etype: 'call' })
+        }
+      }
+      for (const call of node.called_by || []) {
+        if (typeof call !== 'string') {
+          const sourceId = refToChildNodeId(call.ref, 'fn')
+          if (sourceId && fullGraph.nodesById.has(sourceId)) addEdge({ source: sourceId, target: node.id, etype: 'call' })
+        }
+      }
+    }
+    if (node.type === 'comp') {
+      for (const use of node.uses || []) {
+        if (typeof use !== 'string') {
+          const targetId = refToChildNodeId(use.ref, 'comp')
+          if (targetId && fullGraph.nodesById.has(targetId)) addEdge({ source: node.id, target: targetId, etype: 'uses' })
+        }
+      }
+    }
   }
-  return related
 }
 
-function shouldShowNodeLabel(node) {
-  if (node.type === 'file') return true
-  if (state.searchTerm) return true
-  if (node.id === state.activeNodeId) return true
-  const parentId = state.graph?.parentByChild.get(node.id)
-  return Boolean(parentId && parentId === state.expandedFileId)
+function buildVisibleGraph() {
+  const visibleNodeIds = new Set(fullGraph.primaryNodeIds)
+  const expandedChildren = state.expandedNodeId ? fullGraph.childrenByParent.get(state.expandedNodeId) || [] : []
+  expandedChildren.forEach(childId => visibleNodeIds.add(childId))
+
+  const links = []
+  for (const edge of fullGraph.edgesById.values()) {
+    if (!visibleNodeIds.has(edge.source) || !visibleNodeIds.has(edge.target)) continue
+    if (edge.etype === 'contains' && state.expandedNodeId !== edge.source) continue
+    if (edge.etype === 'call' || edge.etype === 'uses') {
+      const sourceNode = fullGraph.nodesById.get(edge.source)
+      const targetNode = fullGraph.nodesById.get(edge.target)
+      if (sourceNode?.parentId !== state.expandedNodeId || targetNode?.parentId !== state.expandedNodeId) continue
+    }
+    links.push({ ...edge })
+  }
+
+  const nodes = [...visibleNodeIds]
+    .map(nodeId => fullGraph.nodesById.get(nodeId))
+    .filter(Boolean)
+    .sort((a, b) => (DRAW_ORDER[a.type] || 9) - (DRAW_ORDER[b.type] || 9))
+
+  const adjacency = new Map()
+  links.forEach(link => {
+    if (!adjacency.has(link.source)) adjacency.set(link.source, new Set())
+    if (!adjacency.has(link.target)) adjacency.set(link.target, new Set())
+    adjacency.get(link.source).add(link.target)
+    adjacency.get(link.target).add(link.source)
+  })
+
+  state.visibleNodeIds = visibleNodeIds
+  state.visibleEdgeIds = new Set(links.map(link => link.id))
+  visibleGraph = { nodes, links, adjacency }
 }
 
-function updateDetailPanel(nodeId) {
-  if (!state.graph || !nodeId || !state.graph.nodesById.has(nodeId)) {
-    setDetailHtml(`
-      <h2>Selection</h2>
-      <p>Nothing selected yet. Click a file or symbol to inspect connected nodes, source file, line number, and relationship counts.</p>
-    `)
+function nodeContext(nodeId) {
+  if (!nodeId || !state.visibleNodeIds.has(nodeId)) return { nodeIds: new Set(), edgeIds: new Set() }
+  const node = fullGraph.nodesById.get(nodeId)
+  const nodeIds = new Set([nodeId])
+  const edgeIds = new Set()
+  const visibleNeighbors = visibleGraph.adjacency.get(nodeId) || new Set()
+  visibleNeighbors.forEach(neighborId => nodeIds.add(neighborId))
+
+  if ((node?.type === 'file' || node?.type === 'route') && state.expandedNodeId === nodeId) {
+    ;(fullGraph.childrenByParent.get(nodeId) || []).forEach(childId => {
+      if (state.visibleNodeIds.has(childId)) nodeIds.add(childId)
+    })
+  }
+
+  if ((node?.type === 'fn' || node?.type === 'comp') && node.parentId) nodeIds.add(node.parentId)
+
+  visibleGraph.links.forEach(link => {
+    const sourceId = linkEndpointId(link.source)
+    const targetId = linkEndpointId(link.target)
+    if (nodeIds.has(sourceId) && nodeIds.has(targetId)) edgeIds.add(link.id)
+    if (sourceId === nodeId || targetId === nodeId) edgeIds.add(link.id)
+  })
+
+  return { nodeIds, edgeIds }
+}
+
+function shouldShowLabel(node) {
+  if (node.type === 'file' || node.type === 'route') return true
+  if (node.type === 'fn' || node.type === 'comp') {
+    return state.expandedNodeId === node.parentId || state.activeNodeId === node.id || state.hoveredNodeId === node.id
+  }
+  return false
+}
+
+function nodeOpacity(node, focusContext, previewContext) {
+  if (focusContext.nodeIds.size) return focusContext.nodeIds.has(node.id) ? 1 : 0.12
+  if (previewContext.nodeIds.size) return previewContext.nodeIds.has(node.id) ? 1 : 0.28
+  if (node.type === 'route') return 0.94
+  if (node.type === 'fn' || node.type === 'comp') return 0.86
+  return 1
+}
+
+function labelOpacity(node, focusContext, previewContext) {
+  if (!shouldShowLabel(node)) return 0
+  if (focusContext.nodeIds.size) return focusContext.nodeIds.has(node.id) ? 1 : 0.08
+  if (previewContext.nodeIds.size) return previewContext.nodeIds.has(node.id) ? 0.98 : 0.18
+  if (node.type === 'route') return 0.86
+  return 1
+}
+
+function edgeOpacity(link, focusContext, previewContext) {
+  const base = EDGE_STYLE[link.etype]?.opacity ?? 0.4
+  if (focusContext.edgeIds.size) return focusContext.edgeIds.has(link.id) ? Math.max(base, 0.88) : 0.05
+  if (previewContext.edgeIds.size) return previewContext.edgeIds.has(link.id) ? Math.max(base, 0.78) : 0.1
+  return base
+}
+
+function edgeWidth(link, focusContext, previewContext) {
+  const base = EDGE_STYLE[link.etype]?.width ?? 1
+  if (focusContext.edgeIds.has(link.id)) return base + 0.8
+  if (previewContext.edgeIds.has(link.id)) return base + 0.4
+  return base
+}
+
+function syncDetailPanelVisibility() {
+  document.body.classList.toggle('details-hidden', !detailPanelVisible)
+  const toggleLabel = document.getElementById('detail-toggle-label')
+  const toggleButton = document.getElementById('detail-toggle')
+  if (toggleLabel) toggleLabel.textContent = detailPanelVisible ? 'Hide Inspector' : 'Show Inspector'
+  if (toggleButton) toggleButton.setAttribute('aria-pressed', detailPanelVisible ? 'true' : 'false')
+}
+
+function setupDetailPanelToggle() {
+  const toggleButton = document.getElementById('detail-toggle')
+  if (!toggleButton || toggleButton.dataset.bound === 'true') return
+  toggleButton.dataset.bound = 'true'
+  toggleButton.addEventListener('click', () => {
+    detailPanelVisible = !detailPanelVisible
+    syncDetailPanelVisibility()
+  })
+}
+
+function semanticTargetX(node, width) {
+  if (node.parentId && state.expandedNodeId === node.parentId) {
+    const parent = fullGraph.nodesById.get(node.parentId)
+    return parent ? parent.x + Math.cos(node.orbitAngle || 0) * (node.orbitRadius || CHILD_RADIUS) : width / 2
+  }
+  if (node.type === 'route') {
+    const spread = Math.max(fullGraph.routeIds.size - 1, 1)
+    return width * (0.12 + (0.76 * node.routeIndex) / spread)
+  }
+  return width / 2
+}
+
+function semanticTargetY(node, height) {
+  if (node.parentId && state.expandedNodeId === node.parentId) {
+    const parent = fullGraph.nodesById.get(node.parentId)
+    return parent ? parent.y + Math.sin(node.orbitAngle || 0) * (node.orbitRadius || CHILD_RADIUS) : height / 2
+  }
+  if (node.type === 'route') return height * 0.2
+  return height * 0.56
+}
+
+function childOrbitForce() {
+  let localNodes = []
+  function force(alpha) {
+    localNodes.forEach(node => {
+      if (!node.parentId || state.expandedNodeId !== node.parentId) return
+      const parent = fullGraph.nodesById.get(node.parentId)
+      if (!parent) return
+      const tx = parent.x + Math.cos(node.orbitAngle || 0) * (node.orbitRadius || CHILD_RADIUS)
+      const ty = parent.y + Math.sin(node.orbitAngle || 0) * (node.orbitRadius || CHILD_RADIUS)
+      node.vx += (tx - node.x) * 0.22 * alpha
+      node.vy += (ty - node.y) * 0.22 * alpha
+    })
+  }
+  force.initialize = nodes => { localNodes = nodes }
+  return force
+}
+
+function setupSVG() {
+  const wrap = document.getElementById('canvas-wrap')
+  const width = wrap.clientWidth
+  const height = wrap.clientHeight
+  svg = d3.select('#graph')
+  svg.selectAll('*').remove()
+
+  const defs = svg.append('defs')
+  ;[
+    { id: 'arr-gray', color: '#55607a' },
+    { id: 'arr-orange', color: '#ec8d4a' },
+    { id: 'arr-green', color: '#38b7a7' },
+    { id: 'arr-blue', color: '#84b0ff' },
+  ].forEach(({ id, color }) => {
+    defs.append('marker')
+      .attr('id', id)
+      .attr('viewBox', '0 0 10 10')
+      .attr('refX', 8)
+      .attr('refY', 5)
+      .attr('markerWidth', 6)
+      .attr('markerHeight', 6)
+      .attr('orient', 'auto-start-reverse')
+      .append('path')
+      .attr('d', 'M2 1L8 5L2 9')
+      .attr('fill', 'none')
+      .attr('stroke', color)
+      .attr('stroke-width', 1.4)
+  })
+
+  const viewport = svg.append('g')
+  linkLayer = viewport.append('g').attr('class', 'links')
+  nodeLayer = viewport.append('g').attr('class', 'nodes')
+
+  zoomBehavior = d3.zoom()
+    .scaleExtent([0.45, 2.6])
+    .on('zoom', event => {
+      currentTransform = event.transform
+      viewport.attr('transform', currentTransform)
+    })
+
+  svg.call(zoomBehavior)
+  svg.on('click.canvas', () => clearFocus())
+
+  simulation = d3.forceSimulation()
+    .force('link', d3.forceLink().id(d => d.id).distance(link => {
+      if (link.etype === 'contains') return 54
+      if (link.etype === 'call' || link.etype === 'uses') return 72
+      if (link.etype === 'handles' || link.etype === 'api_call') return 150
+      return 190
+    }).strength(link => {
+      if (link.etype === 'contains') return 0.6
+      if (link.etype === 'call' || link.etype === 'uses') return 0.42
+      if (link.etype === 'handles' || link.etype === 'api_call') return 0.28
+      return 0.12
+    }))
+    .force('charge', d3.forceManyBody().strength(node => {
+      if (node.parentId) return -110
+      if (node.type === 'route') return -260
+      return -520
+    }))
+    .force('collision', d3.forceCollide().radius(node => (node.r || 12) + (node.parentId ? 18 : 28)).strength(0.95))
+    .force('x', d3.forceX(node => semanticTargetX(node, width)).strength(node => {
+      if (node.parentId) return 0.22
+      if (node.type === 'route') return 0.16
+      return 0.06
+    }))
+    .force('y', d3.forceY(node => semanticTargetY(node, height)).strength(node => {
+      if (node.parentId) return 0.22
+      if (node.type === 'route') return 0.18
+      return 0.05
+    }))
+    .force('child-orbit', childOrbitForce())
+    .force('center', d3.forceCenter(width / 2, height / 2))
+    .alphaDecay(0.08)
+    .velocityDecay(0.4)
+}
+
+function centerOnNode(node, scale = 1.05) {
+  if (!node || typeof node.x !== 'number' || typeof node.y !== 'number') return
+  const wrap = document.getElementById('canvas-wrap')
+  const width = wrap.clientWidth
+  const height = wrap.clientHeight
+  const transform = d3.zoomIdentity.translate(width / 2 - node.x * scale, height / 2 - node.y * scale).scale(scale)
+  svg.transition().duration(320).call(zoomBehavior.transform, transform)
+}
+
+function renderDetailPanel() {
+  const activeNode = state.activeNodeId ? fullGraph.nodesById.get(state.activeNodeId) : null
+  const statusNode = document.getElementById('detail-status')
+  const contentNode = document.getElementById('detail-content')
+  const inspectorMode = document.getElementById('inspector-mode')
+
+  if (inspectorMode) inspectorMode.textContent = activeNode ? `${activeNode.type} focus` : 'Overview'
+  statusNode.innerHTML = `
+    <div class="section-label">State</div>
+    <div class="status-copy">${escapeHtml(activeNode ? `${activeNode.label} is in focus. Nearby structure remains bright while unrelated regions fall back, so the local chain reads first.` : DEFAULT_STATUS)}</div>
+  `
+
+  if (!activeNode) {
+    contentNode.innerHTML = `
+      <div class="section-label">Selection</div>
+      <div class="detail-title">
+        <span class="detail-pill">Overview</span>
+        <div class="detail-name">${escapeHtml(state.repo ? `${state.repo.owner}/${state.repo.repo}` : 'Repository map')}</div>
+      </div>
+      <div class="detail-subtitle">Primary file nodes establish the system-level view. Internal functions stay latent until a file becomes the focus target. Route bridges remain available when the backend can surface them.</div>
+      <div class="detail-grid">
+        <div class="detail-card"><div class="k">Visible now</div><div class="v">${visibleGraph.nodes.filter(node => !node.parentId).length} primary nodes</div></div>
+        <div class="detail-card"><div class="k">Expanded file</div><div class="v">${state.expandedNodeId ? escapeHtml(fileName(state.expandedNodeId)) : 'None'}</div></div>
+        <div class="detail-card"><div class="k">Focus mode</div><div class="v">${state.activeNodeId ? 'Pinned' : 'Ambient overview'}</div></div>
+        <div class="detail-card"><div class="k">Interaction</div><div class="v">Hover previews. Click commits focus.</div></div>
+      </div>
+      <div class="detail-section">
+        <h3>Explore</h3>
+        <div class="detail-list">
+          <span class="detail-chip">Select a file to reveal local functions</span>
+          <span class="detail-chip">Function calls render as orange structural links</span>
+          <span class="detail-chip">Search expands hidden matches automatically</span>
+        </div>
+      </div>
+    `
     return
   }
 
-  const node = state.graph.nodesById.get(nodeId)
-  const relatedLinks = state.graph.linksByNode.get(nodeId) || []
-  const outgoing = relatedLinks.filter(link => link.source === nodeId)
-  const incoming = relatedLinks.filter(link => link.target === nodeId)
-  const relatedNames = [...relatedNodeIds(nodeId)]
-    .filter(id => id !== nodeId)
-    .map(id => state.graph.nodesById.get(id))
+  const neighbors = [...(visibleGraph.adjacency.get(activeNode.id) || new Set())]
+    .map(nodeId => fullGraph.nodesById.get(nodeId))
     .filter(Boolean)
-    .slice(0, 14)
 
-  const metaCards = [
-    node.file ? `<div class="meta-card"><div class="k">File</div><div class="v">${escapeHtml(node.file)}</div></div>` : '',
-    node.line != null ? `<div class="meta-card"><div class="k">Line</div><div class="v">${escapeHtml(node.line)}</div></div>` : '',
-    `<div class="meta-card"><div class="k">Weight</div><div class="v">${escapeHtml(node.weight)}</div></div>`,
-    `<div class="meta-card"><div class="k">Outgoing</div><div class="v">${escapeHtml(outgoing.length)}</div></div>`,
-    `<div class="meta-card"><div class="k">Incoming</div><div class="v">${escapeHtml(incoming.length)}</div></div>`,
-  ].filter(Boolean).join('')
+  const cards = []
+  let sections = []
 
-  setDetailHtml(`
-    <h2>Selection</h2>
-    <div class="title-row">
-      <span class="pill">${escapeHtml(node.type)}</span>
-      <div class="node-name">${escapeHtml(node.label)}</div>
-    </div>
-    <p class="node-subtitle">${escapeHtml(node.id)}</p>
-    <div class="meta-grid">${metaCards}</div>
-    <div class="section">
-      <h3>Connected Nodes</h3>
-      <div class="chips">
-        ${relatedNames.length ? relatedNames.map(item => `<span class="chip">${escapeHtml(item.label)} <small>(${escapeHtml(item.type)})</small></span>`).join('') : '<span class="empty">No connected nodes.</span>'}
-      </div>
-    </div>
-  `)
-}
-
-function updateStatusPanel(meta, message) {
-  setStatusHtml(`
-    <h2>Status</h2>
-    <p>${escapeHtml(message)}</p>
-    ${meta ? `<div class="section"><h3>Repo</h3><div class="chips">
-      <span class="chip">${escapeHtml(meta.owner)}/${escapeHtml(meta.repo)}</span>
-      <span class="chip">commit ${escapeHtml(meta.commit_sha.slice(0, 12))}</span>
-      <span class="chip">${meta.cached ? 'cache hit' : 'fresh fetch'}</span>
-    </div></div>` : ''}
-  `)
-}
-
-function fitGraph() {
-  const wrap = document.getElementById('canvas-wrap')
-  const width = wrap.clientWidth
-  const height = wrap.clientHeight
-  const svgSel = d3.select('#graph')
-  svgSel.attr('viewBox', [0, 0, width, height])
-}
-
-function renderGraph() {
-  fitGraph()
-
-  const wrap = document.getElementById('canvas-wrap')
-  const width = wrap.clientWidth
-  const height = wrap.clientHeight
-  const { nodes, links } = computeVisibleGraph()
-  state.visible = { nodes, links }
-
-  if (!svg) {
-    svg = d3.select('#graph')
-    svg.selectAll('*').remove()
-    zoomLayer = svg.append('g')
-    linkLayer = zoomLayer.append('g')
-    nodeLayer = zoomLayer.append('g')
-    svg.call(
-      d3.zoom()
-        .scaleExtent([0.25, 3])
-        .on('zoom', event => zoomLayer.attr('transform', event.transform))
+  if (activeNode.type === 'file') {
+    cards.push(
+      ['Functions', activeNode.functionCount || 0],
+      ['Components', activeNode.componentCount || 0],
+      ['Routes', (activeNode.routeConnections || []).length],
+      ['Imports', (activeNode.imports || []).length],
     )
+    sections = [
+      ['Route connections', activeNode.routeConnections || []],
+      ['Imports', activeNode.imports || []],
+      ['Visible neighbors', neighbors.map(node => node.label)],
+    ]
+  } else if (activeNode.type === 'route') {
+    cards.push(
+      ['Method', activeNode.method || 'unknown'],
+      ['Path', activeNode.path || activeNode.label],
+      ['Handler file', nodeLabelPath(activeNode.handler_ref) || 'unknown'],
+      ['Linked frontend', nodeLabelPath(activeNode.frontend_ref) || 'none'],
+    )
+    const routeCalls = (activeNode.routeCalls || []).map(call => {
+      if (typeof call === 'string') return call
+      const file = nodeLabelPath(call.ref)
+      const name = nodeLabelName(call.ref)
+      return file && name ? `${fileName(file)}::${name}` : name || 'unknown'
+    })
+    sections = [['Visible neighbors', neighbors.map(node => node.label)], ['Handler calls', routeCalls]]
+  } else {
+    cards.push(
+      ['Parent file', activeNode.fileId || activeNode.parentId || 'unknown'],
+      ['Calls', (activeNode.calls || activeNode.uses || []).length],
+      ['Called by', (activeNode.called_by || []).length],
+      ['Expanded with', activeNode.parentId ? fileName(activeNode.parentId) : 'n/a'],
+    )
+    const calls = (activeNode.calls || []).map(call => typeof call === 'string' ? call : call.name || nodeLabelName(call.ref))
+    const calledBy = (activeNode.called_by || []).map(call => typeof call === 'string' ? call : call.name || nodeLabelName(call.ref))
+    const uses = (activeNode.uses || []).map(use => typeof use === 'string' ? use : use.name || nodeLabelName(use.ref))
+    sections = [
+      ['Signature', activeNode.signature ? [activeNode.signature] : []],
+      ['Calls', calls],
+      ['Called by', calledBy],
+      ['Uses', uses],
+      ['Visible neighbors', neighbors.map(node => node.label)],
+    ]
   }
 
-  if (simulation) simulation.stop()
+  contentNode.innerHTML = `
+    <div class="section-label">Selection</div>
+    <div class="detail-title">
+      <span class="detail-pill">${escapeHtml(activeNode.type)}</span>
+      <div class="detail-name">${escapeHtml(activeNode.label)}</div>
+    </div>
+    <div class="detail-subtitle">${escapeHtml(activeNode.fullPath || activeNode.fileId || activeNode.id)}</div>
+    <div class="detail-grid">
+      ${cards.map(([key, value]) => `
+        <div class="detail-card">
+          <div class="k">${escapeHtml(key)}</div>
+          <div class="v">${escapeHtml(value)}</div>
+        </div>
+      `).join('')}
+    </div>
+    ${sections.map(([title, items]) => `
+      <div class="detail-section">
+        <h3>${escapeHtml(title)}</h3>
+        ${items && items.length
+          ? `<div class="detail-list">${items.slice(0, 12).map(item => `<span class="detail-chip">${escapeHtml(item)}</span>`).join('')}</div>`
+          : '<div class="detail-empty">None surfaced in the current view.</div>'}
+      </div>
+    `).join('')}
+  `
+}
 
-  nodes.forEach(node => {
-    if (node.x == null || node.y == null) {
-      if (node.type === 'file') {
-        const fileIndex = state.graph.fileIds.indexOf(node.id)
-        const angle = (fileIndex / Math.max(state.graph.fileIds.length, 1)) * Math.PI * 2
-        node.x = width / 2 + Math.cos(angle) * Math.min(width, height) * 0.28
-        node.y = height / 2 + Math.sin(angle) * Math.min(width, height) * 0.28
-      } else {
-        const parentId = state.graph.parentByChild.get(node.id)
-        const parent = nodes.find(item => item.id === parentId)
-        node.x = parent ? parent.x + (Math.random() - 0.5) * 120 : width / 2
-        node.y = parent ? parent.y + (Math.random() - 0.5) * 120 : height / 2
+function applyVisualState() {
+  const focusContext = nodeContext(state.activeNodeId)
+  const previewContext = state.activeNodeId ? { nodeIds: new Set(), edgeIds: new Set() } : nodeContext(state.hoveredNodeId)
+
+  nodeLayer.selectAll('.node')
+    .style('opacity', node => nodeOpacity(node, focusContext, previewContext))
+    .each(function(node) {
+      const isActive = node.id === state.activeNodeId
+      const isPreview = !state.activeNodeId && node.id === state.hoveredNodeId
+      d3.select(this).select('.node-shape')
+        .attr('stroke-width', isActive ? 2.7 : (isPreview ? 2.1 : (node.parentId ? 1.2 : 1.6)))
+        .style('filter', isActive ? 'drop-shadow(0 0 14px rgba(255,255,255,0.16))' : (isPreview ? 'drop-shadow(0 0 10px rgba(255,255,255,0.10))' : null))
+      d3.select(this).select('.node-label').style('opacity', labelOpacity(node, focusContext, previewContext))
+      d3.select(this).select('.node-badge').style('opacity', node.type === 'file' ? labelOpacity(node, focusContext, previewContext) : 0)
+    })
+
+  linkLayer.selectAll('.link')
+    .style('opacity', link => edgeOpacity(link, focusContext, previewContext))
+    .attr('stroke-width', link => edgeWidth(link, focusContext, previewContext))
+
+  const activeSelection = state.activeNodeId
+    ? nodeLayer.selectAll('.node').filter(node => node.id === state.activeNodeId)
+    : nodeLayer.selectAll('.node').filter(node => node.id === state.hoveredNodeId)
+
+  activeSelection.raise()
+  renderDetailPanel()
+}
+
+function ticked() {
+  linkLayer.selectAll('.link')
+    .attr('x1', link => link.source.x)
+    .attr('y1', link => link.source.y)
+    .attr('x2', link => link.target.x)
+    .attr('y2', link => link.target.y)
+
+  nodeLayer.selectAll('.node')
+    .attr('transform', node => `translate(${node.x},${node.y})`)
+}
+
+function rerender(reheat = 0.16) {
+  buildVisibleGraph()
+
+  visibleGraph.nodes.forEach(node => {
+    if (node.parentId && state.expandedNodeId === node.parentId) {
+      const parent = fullGraph.nodesById.get(node.parentId)
+      if (parent && (typeof node.x !== 'number' || typeof node.y !== 'number')) {
+        node.x = parent.x + Math.cos(node.orbitAngle || 0) * (node.orbitRadius || CHILD_RADIUS)
+        node.y = parent.y + Math.sin(node.orbitAngle || 0) * (node.orbitRadius || CHILD_RADIUS)
       }
     }
   })
 
-  simulation = d3.forceSimulation(nodes)
-    .force('link', d3.forceLink(links).id(d => d.id).distance(link => link.type === 'contains' ? 58 : 135).strength(link => link.type === 'contains' ? 0.75 : 0.3))
-    .force('charge', d3.forceManyBody().strength(node => node.type === 'file' ? -680 : -260))
-    .force('center', d3.forceCenter(width / 2, height / 2))
-    .force('collision', d3.forceCollide().radius(node => (TYPE_THEME[node.type]?.size ?? 10) + 14))
+  simulation.nodes(visibleGraph.nodes).on('tick', ticked)
+  simulation.force('link').links(visibleGraph.links)
+  if (reheat > 0) simulation.alpha(Math.min(reheat, 0.24)).restart()
 
-  const linkSel = linkLayer
-    .selectAll('line')
-    .data(links, d => d.id)
-    .join('line')
+  const linkSel = linkLayer.selectAll('.link').data(visibleGraph.links, link => link.id)
+  linkSel.exit().transition().duration(180).style('opacity', 0).remove()
+
+  const linkEnter = linkSel.enter()
+    .append('line')
     .attr('class', 'link')
-    .attr('stroke', d => LINK_STYLE[d.type]?.stroke ?? '#6d7f9d')
-    .attr('stroke-width', d => LINK_STYLE[d.type]?.width ?? 1)
-    .attr('stroke-dasharray', d => LINK_STYLE[d.type]?.dash ?? null)
-    .attr('opacity', d => linkOpacity(d))
+    .style('opacity', 0)
+    .attr('stroke', link => EDGE_STYLE[link.etype]?.stroke || '#55607a')
+    .attr('stroke-dasharray', link => EDGE_STYLE[link.etype]?.dash || null)
+    .attr('marker-end', link => EDGE_STYLE[link.etype]?.marker || null)
 
-  const nodeSel = nodeLayer
-    .selectAll('g.node')
-    .data(nodes, d => d.id)
-    .join(enter => {
-      const group = enter.append('g').attr('class', 'node')
-      group.append('circle')
-      group.append('text').attr('class', 'node-label')
-      return group
+  linkEnter.merge(linkSel)
+    .attr('stroke', link => EDGE_STYLE[link.etype]?.stroke || '#55607a')
+    .attr('stroke-dasharray', link => EDGE_STYLE[link.etype]?.dash || null)
+    .attr('marker-end', link => EDGE_STYLE[link.etype]?.marker || null)
+    .transition()
+    .duration(180)
+    .style('opacity', link => EDGE_STYLE[link.etype]?.opacity ?? 0.4)
+
+  const nodeSel = nodeLayer.selectAll('.node').data(visibleGraph.nodes, node => node.id)
+  nodeSel.exit().transition().duration(180).style('opacity', 0).remove()
+
+  const nodeEnter = nodeSel.enter()
+    .append('g')
+    .attr('class', 'node')
+    .style('opacity', 0)
+    .on('mouseenter', (_, node) => {
+      state.hoveredNodeId = node.id
+      applyVisualState()
     })
-    .attr('opacity', d => {
-      if (!state.activeNodeId) return nodeOpacity(d)
-      if (d.id === state.activeNodeId || relatedNodeIds(state.activeNodeId).has(d.id)) return 1
-      return 0.16
+    .on('mouseleave', () => {
+      state.hoveredNodeId = null
+      applyVisualState()
     })
-    .on('click', (_, node) => {
-      state.activeNodeId = node.id
-      if (node.type === 'file') {
-        state.expandedFileId = state.expandedFileId === node.id ? null : node.id
-      }
-      updateDetailPanel(node.id)
-      renderGraph()
+    .on('click', (event, node) => {
+      event.stopPropagation()
+      handleClick(node)
     })
+    .call(
+      d3.drag()
+        .on('start', (event, node) => {
+          if (!event.active) simulation.alphaTarget(0.08).restart()
+          node.fx = node.x
+          node.fy = node.y
+        })
+        .on('drag', (event, node) => {
+          node.fx = event.x
+          node.fy = event.y
+        })
+        .on('end', (event, node) => {
+          if (!event.active) simulation.alphaTarget(0)
+          if (node.parentId && state.expandedNodeId === node.parentId) {
+            node.fx = null
+            node.fy = null
+            return
+          }
+          if (node.type === 'file' || node.type === 'route') {
+            node.fx = event.x
+            node.fy = event.y
+            return
+          }
+          node.fx = null
+          node.fy = null
+        })
+    )
 
-  nodeSel.select('circle')
-    .attr('r', d => (TYPE_THEME[d.type]?.size ?? 10) + Math.max(0, (Number(d.weight) || 0) * 3))
-    .attr('fill', d => themeForNode(d).fill)
-    .attr('stroke', d => themeForNode(d).stroke)
-    .attr('stroke-width', d => d.id === state.activeNodeId ? 2.8 : 1.6)
-    .style('filter', d => `drop-shadow(0 0 10px ${themeForNode(d).stroke}55)`)
+  nodeEnter.filter(node => !NODE_TYPES[node.type]?.diamond)
+    .append('circle')
+    .attr('class', 'node-shape')
+    .attr('r', 0)
+    .attr('fill', node => nodeTheme(node).fill)
+    .attr('stroke', node => nodeTheme(node).stroke)
 
-  nodeSel.selectAll('title').remove()
-  nodeSel.append('title').text(d => d.id)
+  nodeEnter.filter(node => NODE_TYPES[node.type]?.diamond)
+    .append('rect')
+    .attr('class', 'node-shape')
+    .attr('width', 0)
+    .attr('height', 0)
+    .attr('x', 0)
+    .attr('y', 0)
+    .attr('transform', 'rotate(45)')
+    .attr('fill', node => nodeTheme(node).fill)
+    .attr('stroke', node => nodeTheme(node).stroke)
 
-  nodeSel.select('text')
-    .attr('fill', d => themeForNode(d).text)
-    .attr('font-size', d => d.type === 'file' ? 12 : 10)
+  nodeEnter.append('text')
+    .attr('class', 'node-label')
     .attr('text-anchor', 'middle')
-    .attr('dy', d => (TYPE_THEME[d.type]?.size ?? 10) + 16)
-    .style('display', d => shouldShowNodeLabel(d) ? 'block' : 'none')
-    .text(d => d.type === 'file' ? fileName(d.id) : d.label)
+    .attr('dy', node => node.type === 'file' ? -8 : (node.type === 'route' ? 26 : -14))
+    .attr('font-size', node => NODE_TYPES[node.type]?.labelFontSize || 10)
+    .attr('fill', node => nodeTheme(node).text)
+    .text(node => node.label)
 
-  nodeSel.call(
-    d3.drag()
-      .on('start', (event, d) => {
-        if (!event.active) simulation.alphaTarget(0.3).restart()
-        d.fx = d.x
-        d.fy = d.y
-      })
-      .on('drag', (event, d) => {
-        d.fx = event.x
-        d.fy = event.y
-      })
-      .on('end', (event, d) => {
-        if (!event.active) simulation.alphaTarget(0)
-        d.fx = null
-        d.fy = null
-      })
-  )
+  nodeEnter.filter(node => NODE_TYPES[node.type]?.badge)
+    .append('text')
+    .attr('class', 'node-badge')
+    .attr('text-anchor', 'middle')
+    .attr('dy', 9)
+    .attr('font-size', 9)
+    .attr('fill', node => nodeTheme(node).badge)
+    .text(node => (node.lang || '').toUpperCase())
 
-  simulation.on('tick', () => {
-    linkSel
-      .attr('x1', d => d.source.x)
-      .attr('y1', d => d.source.y)
-      .attr('x2', d => d.target.x)
-      .attr('y2', d => d.target.y)
+  nodeEnter.append('title')
 
-    nodeSel.attr('transform', d => `translate(${d.x}, ${d.y})`)
-  })
+  const mergedNodes = nodeEnter.merge(nodeSel)
+  mergedNodes.select('circle')
+    .attr('fill', node => nodeTheme(node).fill)
+    .attr('stroke', node => nodeTheme(node).stroke)
+    .transition()
+    .duration(180)
+    .attr('r', node => node.r)
+
+  mergedNodes.select('rect')
+    .attr('fill', node => nodeTheme(node).fill)
+    .attr('stroke', node => nodeTheme(node).stroke)
+    .transition()
+    .duration(180)
+    .attr('width', node => (node.r || 14) * 1.72)
+    .attr('height', node => (node.r || 14) * 1.72)
+    .attr('x', node => -((node.r || 14) * 1.72) / 2)
+    .attr('y', node => -((node.r || 14) * 1.72) / 2)
+
+  mergedNodes.select('.node-label')
+    .attr('font-size', node => NODE_TYPES[node.type]?.labelFontSize || 10)
+    .attr('fill', node => nodeTheme(node).text)
+    .text(node => node.label)
+
+  mergedNodes.select('.node-badge')
+    .attr('fill', node => nodeTheme(node).badge)
+    .text(node => (node.lang || '').toUpperCase())
+
+  mergedNodes.select('title').text(node => node.fullPath || node.id)
+  mergedNodes.transition().duration(180).style('opacity', 1)
+  applyVisualState()
 }
 
-async function loadGraph(owner, repo) {
-  setLoading(`Loading ${owner}/${repo}...`, true)
-  updateStatusPanel(null, `Fetching ${owner}/${repo} from the backend.`)
+function clearFocus() {
+  state.activeNodeId = null
+  state.expandedNodeId = null
+  state.hoveredNodeId = null
+  if (simulation) rerender(0.08)
+}
+
+function focusNode(nodeId, options = {}) {
+  const node = fullGraph.nodesById.get(nodeId)
+  if (!node) return
+
+  if (node.type === 'file') {
+    state.expandedNodeId = options.toggleExpand ? (state.expandedNodeId === node.id ? null : node.id) : null
+  } else if (node.type === 'route') {
+    state.expandedNodeId = null
+  } else if (node.parentId) {
+    state.expandedNodeId = node.parentId
+  }
+
+  state.activeNodeId = node.id
+  rerender(options.reheat ?? 0.16)
+  centerOnNode(node, node.type === 'route' ? 1.02 : 1.08)
+}
+
+function handleClick(node) {
+  if (node.type === 'file') {
+    focusNode(node.id, { toggleExpand: true })
+    return
+  }
+  focusNode(node.id)
+}
+
+function nodeSearchScore(node, query) {
+  const q = query.toLowerCase()
+  const haystack = [node.label, node.fullPath, node.id, node.method, node.path, node.fileId].filter(Boolean).join(' ').toLowerCase()
+  if (!haystack.includes(q)) return -1
+  let score = 0
+  if ((node.fullPath || '').toLowerCase() === q || node.id.toLowerCase() === q) score += 100
+  if (node.label.toLowerCase() === q) score += 80
+  if (node.label.toLowerCase().startsWith(q)) score += 50
+  if ((node.fullPath || '').toLowerCase().includes(q)) score += 30
+  score += node.type === 'file' ? 12 : (node.type === 'route' ? 9 : 6)
+  return score
+}
+
+function findBestNodeMatch(query) {
+  let bestNode = null
+  let bestScore = -1
+  for (const node of fullGraph.nodesById.values()) {
+    const score = nodeSearchScore(node, query)
+    if (score > bestScore) {
+      bestScore = score
+      bestNode = node
+    }
+  }
+  return bestNode
+}
+
+function runSearch(query) {
+  if (!query) {
+    clearFocus()
+    return
+  }
+  const match = findBestNodeMatch(query)
+  if (!match) {
+    state.activeNodeId = null
+    state.hoveredNodeId = null
+    rerender(0)
+    document.getElementById('detail-status').innerHTML = `
+      <div class="section-label">State</div>
+      <div class="status-copy">No match for "${escapeHtml(query)}". Search targets files, routes, and hidden function or component nodes. Hidden matches expand their parent file automatically.</div>
+    `
+    const inspectorMode = document.getElementById('inspector-mode')
+    if (inspectorMode) inspectorMode.textContent = 'Search'
+    return
+  }
+  if (match.type === 'file') {
+    focusNode(match.id, { toggleExpand: false, reheat: 0.12 })
+    return
+  }
+  if (match.type === 'route') {
+    focusNode(match.id, { reheat: 0.12 })
+    return
+  }
+  focusNode(match.id, { reheat: 0.14 })
+}
+
+function setStat(id, value) {
+  const node = document.querySelector(`#${id} .stat__value`)
+  if (node) node.textContent = String(value)
+}
+
+function setStatus(message) {
+  document.getElementById('detail-status').innerHTML = `
+    <div class="section-label">State</div>
+    <div class="status-copy">${escapeHtml(message)}</div>
+  `
+}
+
+function setEmptyDetail(title, subtitle) {
+  document.getElementById('detail-content').innerHTML = `
+    <div class="section-label">Selection</div>
+    <div class="detail-title">
+      <span class="detail-pill">Overview</span>
+      <div class="detail-name">${escapeHtml(title)}</div>
+    </div>
+    <div class="detail-subtitle">${escapeHtml(subtitle)}</div>
+  `
+}
+
+function setupSpotlight() {
+  const update = (x, y) => {
+    document.documentElement.style.setProperty('--spotlight-x', `${x}px`)
+    document.documentElement.style.setProperty('--spotlight-y', `${y}px`)
+  }
+  update(window.innerWidth * 0.5, window.innerHeight * 0.34)
+  window.addEventListener('pointermove', event => update(event.clientX, event.clientY), { passive: true })
+}
+
+async function loadRepo(owner, repo) {
+  state.repo = { owner, repo }
+  document.getElementById('repo-input').value = `${owner}/${repo}`
+  document.getElementById('search').value = ''
+  setStatus(`Loading ${owner}/${repo}. The graph will preserve DiscoverMap focus, hover, and dimming behavior while adapting git-map analysis data.`)
+  setEmptyDetail(`${owner}/${repo}`, 'Fetching repository analysis and compatibility chunks.')
 
   try {
-    const response = await fetch(`/api/graph/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`)
-    const payload = await response.json()
-    if (!response.ok) {
-      throw new Error(payload.detail || `Request failed with status ${response.status}`)
-    }
+    const indexResponse = await fetch(`/api/discover/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/index`)
+    const index = await indexResponse.json()
+    if (!indexResponse.ok) throw new Error(index.detail || `Request failed with status ${indexResponse.status}`)
 
-    state.graph = enrichGraph(payload)
-    state.activeNodeId = null
-    state.expandedFileId = null
-    state.searchTerm = ''
-    document.getElementById('repo-input').value = `${owner}/${repo}`
-    updateStats(payload.meta)
-    updateStatusPanel(payload.meta, `Graph ready. ${payload.meta.file_count} files were parsed and mapped into ${payload.meta.node_count} nodes.`)
-    updateDetailPanel(null)
-    renderGraph()
+    setStat('s-files', index.total_files ?? 0)
+    setStat('s-fns', index.total_functions ?? 0)
+    setStat('s-comps', index.total_components ?? 0)
+    setStat('s-routes', index.total_routes ?? 0)
+
+    const chunkEntries = await Promise.all(
+      (index.chunks || []).map(async chunkId => {
+        const response = await fetch(`/api/discover/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/chunk/${encodeURIComponent(chunkId)}`)
+        const chunk = await response.json()
+        if (!response.ok) throw new Error(chunk.detail || `Chunk request failed with status ${response.status}`)
+        return [chunkId, chunk]
+      })
+    )
+
+    buildFullGraph(index, Object.fromEntries(chunkEntries))
+    setupSVG()
+    rerender(0.18)
   } catch (error) {
-    updateStats(null)
-    resetPanels()
-    updateStatusPanel(null, error.message || 'Failed to load repository graph.')
-    if (nodeLayer) nodeLayer.selectAll('*').remove()
-    if (linkLayer) linkLayer.selectAll('*').remove()
-  } finally {
-    setLoading('Loading repository graph...', false)
+    resetGraphState()
+    setStat('s-files', '-')
+    setStat('s-fns', '-')
+    setStat('s-comps', '-')
+    setStat('s-routes', '-')
+    if (svg) svg.selectAll('*').remove()
+    setStatus(error.message || 'Failed to load repository graph.')
+    setEmptyDetail('Load failed', 'The graph could not be initialized for this repository.')
   }
 }
 
-function onSearchChange(event) {
-  state.searchTerm = event.target.value.trim()
-  renderGraph()
-}
-
-function installSearchInput() {
-  const input = document.createElement('input')
-  input.className = 'field'
-  input.id = 'search-input'
-  input.type = 'text'
-  input.placeholder = 'Search visible graph'
-  input.addEventListener('input', onSearchChange)
-  document.getElementById('repo-form').appendChild(input)
-}
-
-function setupForm() {
+function setupRepoForm() {
   document.getElementById('repo-form').addEventListener('submit', event => {
     event.preventDefault()
     const parsed = normalizeRepoInput(document.getElementById('repo-input').value)
     if (!parsed) {
-      updateStatusPanel(null, 'Enter owner/repo or a full GitHub URL.')
+      setStatus('Enter owner/repo or a full GitHub URL.')
       return
     }
     window.history.pushState({}, '', `/${parsed.owner}/${parsed.repo}`)
-    loadGraph(parsed.owner, parsed.repo)
+    loadRepo(parsed.owner, parsed.repo)
   })
 
   window.addEventListener('popstate', () => {
     const repo = currentRepoFromPath()
-    if (repo) loadGraph(repo.owner, repo.repo)
-    else {
-      updateStats(null)
-      resetPanels()
-      if (nodeLayer) nodeLayer.selectAll('*').remove()
-      if (linkLayer) linkLayer.selectAll('*').remove()
+    if (repo) {
+      loadRepo(repo.owner, repo.repo)
+      return
     }
+    resetGraphState()
+    if (svg) svg.selectAll('*').remove()
+    setStat('s-files', '-')
+    setStat('s-fns', '-')
+    setStat('s-comps', '-')
+    setStat('s-routes', '-')
+    setStatus('Paste a GitHub URL or open /owner/repo to load a repository graph.')
+    setEmptyDetail('Repository map', 'Primary file nodes and route bridges appear after a repository is loaded.')
   })
 }
 
 function init() {
-  installSearchInput()
-  setupForm()
-  resetPanels()
-  fitGraph()
-  window.addEventListener('resize', () => renderGraph())
+  syncDetailPanelVisibility()
+  setupDetailPanelToggle()
+  setupSpotlight()
+  setupRepoForm()
+
+  document.getElementById('search').addEventListener('input', event => {
+    const query = event.target.value.trim()
+    window.clearTimeout(searchTimer)
+    searchTimer = window.setTimeout(() => runSearch(query), 140)
+  })
+
+  document.getElementById('search').addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      event.target.value = ''
+      clearFocus()
+    }
+  })
+
+  window.addEventListener('resize', () => {
+    if (!fullGraph.nodesById.size) return
+    setupSVG()
+    rerender(0)
+  })
+
+  setStatus('Paste a GitHub URL or open /owner/repo to load a repository graph.')
+  setEmptyDetail('Repository map', 'Primary file nodes and route bridges appear after a repository is loaded.')
 
   const repo = currentRepoFromPath()
-  if (repo) {
-    loadGraph(repo.owner, repo.repo)
-  }
+  if (repo) loadRepo(repo.owner, repo.repo)
 }
 
 init()
