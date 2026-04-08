@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000").replace(/\/$/, "");
+
 function Graph() {
   const { owner = "", repo = "" } = useParams();
   const [status, setStatus] = useState("loading");
@@ -16,7 +18,7 @@ function Graph() {
       setError("");
 
       try {
-        const response = await fetch("http://localhost:8000/analyze-repo", {
+        const response = await fetch(`${API_BASE_URL}/analyze-repo`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
