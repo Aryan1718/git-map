@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DiscoverMap</title>
+<title>git-map</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <style>
   :root {
@@ -127,10 +127,10 @@
     position: relative;
     z-index: 1;
     height: 100vh;
-    padding: 18px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 10px;
   }
 
   .glass-card {
@@ -154,11 +154,11 @@
 
   #topbar {
     display: grid;
-    grid-template-columns: minmax(240px, 1.1fr) minmax(360px, 1.45fr) auto;
+    grid-template-columns: auto minmax(320px, 1fr) auto;
     align-items: center;
-    gap: 18px;
-    padding: 18px 22px;
-    min-height: 94px;
+    gap: 14px;
+    padding: 10px 14px;
+    min-height: 62px;
     transition: transform 320ms cubic-bezier(.22, 1, .36, 1), opacity 320ms ease, border-color 180ms ease;
   }
 
@@ -169,7 +169,7 @@
   #brand {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 2px;
     min-width: 0;
   }
 
@@ -177,8 +177,8 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-size: 11px;
-    letter-spacing: 0.24em;
+    font-size: 10px;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     color: rgba(168, 193, 244, 0.7);
   }
@@ -193,47 +193,30 @@
   }
 
   #brand h1 {
-    font-size: clamp(24px, 3vw, 34px);
+    font-size: clamp(18px, 2vw, 22px);
     line-height: 1;
-    letter-spacing: -0.05em;
+    letter-spacing: -0.04em;
     font-weight: 600;
   }
 
-  #brand p {
-    max-width: 38ch;
-    color: var(--text-soft);
-    font-size: 13px;
-    line-height: 1.6;
-  }
-
   #control-stack {
-    display: grid;
-    gap: 12px;
+    display: flex;
     min-width: 0;
   }
-
-  #repo-form {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 10px;
-    min-width: 0;
-  }
-
-  #repo-wrap,
   #search-wrap {
     display: flex;
     align-items: center;
     gap: 12px;
     min-width: 0;
-    padding: 13px 16px;
-    border-radius: 18px;
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 16px;
     background: linear-gradient(180deg, rgba(6, 10, 18, 0.74), rgba(12, 17, 30, 0.58));
     border: 1px solid rgba(145, 170, 212, 0.12);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
     transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
   }
 
-  #repo-wrap:focus-within,
   #search-wrap:focus-within {
     border-color: rgba(135, 165, 255, 0.38);
     background: linear-gradient(180deg, rgba(8, 13, 23, 0.88), rgba(14, 20, 34, 0.72));
@@ -251,7 +234,6 @@
     color: rgba(192, 208, 235, 0.62);
   }
 
-  #repo-input,
   #search {
     flex: 1;
     min-width: 0;
@@ -264,7 +246,6 @@
     font-family: inherit;
   }
 
-  #repo-input::placeholder,
   #search::placeholder {
     color: rgba(171, 189, 220, 0.48);
   }
@@ -285,67 +266,45 @@
     text-transform: uppercase;
   }
 
-  #repo-submit {
+  .topbar-meta {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    min-width: 116px;
-    padding: 0 18px;
-    border-radius: 18px;
-    border: 1px solid rgba(145, 170, 212, 0.16);
-    background: linear-gradient(180deg, rgba(20, 29, 48, 0.84), rgba(9, 15, 27, 0.64));
-    color: var(--text);
-    font: inherit;
-    font-size: 12px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    cursor: pointer;
-    box-shadow: var(--shadow-md);
-    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
-  }
-
-  #repo-submit:hover {
-    transform: translateY(-1px);
-    border-color: rgba(157, 189, 244, 0.24);
-    background: linear-gradient(180deg, rgba(23, 34, 56, 0.92), rgba(11, 17, 29, 0.72));
-  }
-
-  #stats {
-    display: flex;
-    flex-wrap: wrap;
     justify-content: flex-end;
-    gap: 10px;
+    min-width: 0;
   }
 
-  .stat {
+  .repo-chip {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    min-width: 88px;
-    padding: 9px 12px;
+    gap: 8px;
+    max-width: 240px;
+    min-width: 0;
+    padding: 7px 10px;
     border-radius: 999px;
-    background: linear-gradient(180deg, rgba(14, 20, 33, 0.8), rgba(9, 13, 24, 0.62));
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(145, 170, 212, 0.12);
     color: var(--text-soft);
-    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
-  }
-
-  .stat:hover {
-    transform: translateY(-1px);
-    border-color: rgba(157, 189, 244, 0.24);
-    background: linear-gradient(180deg, rgba(18, 26, 44, 0.86), rgba(11, 17, 29, 0.72));
-  }
-
-  .stat__label {
     font-size: 10px;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--text-muted);
   }
 
-  .stat__value {
-    font-size: 14px;
-    font-weight: 600;
+  .repo-chip::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(122, 154, 255, 1), rgba(59, 219, 208, 1));
+    box-shadow: 0 0 10px rgba(95, 141, 255, 0.4);
+    flex: 0 0 auto;
+  }
+
+  .repo-chip__value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     color: var(--text);
   }
 
@@ -354,7 +313,7 @@
     flex: 1;
     min-height: 0;
     overflow: hidden;
-    border-radius: 30px;
+    border-radius: 24px;
     border: 1px solid rgba(145, 170, 212, 0.08);
     background:
       radial-gradient(circle at 50% 46%, rgba(88, 114, 232, 0.1), transparent 30%),
@@ -406,18 +365,27 @@
   }
 
   #graph-hint {
-    top: 18px;
-    left: 18px;
-    width: min(340px, calc(100% - 36px));
-    padding: 18px 18px 16px;
+    top: 58px;
+    left: 12px;
+    width: min(300px, calc(100% - 24px));
+    padding: 14px 14px 12px;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+  }
+
+  body.help-open #graph-hint {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
   }
 
   .hint-kicker {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 10px;
-    font-size: 11px;
+    margin-bottom: 8px;
+    font-size: 10px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: rgba(177, 198, 237, 0.74);
@@ -433,17 +401,17 @@
   }
 
   .hint-title {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     letter-spacing: -0.03em;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .hint-copy {
     color: var(--text-soft);
-    font-size: 13px;
-    line-height: 1.65;
-    margin-bottom: 14px;
+    font-size: 12px;
+    line-height: 1.55;
+    margin-bottom: 10px;
   }
 
   .hint-actions {
@@ -456,12 +424,49 @@
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    padding: 8px 10px;
+    padding: 6px 8px;
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(145, 170, 212, 0.08);
     color: rgba(212, 224, 247, 0.84);
-    font-size: 12px;
+    font-size: 11px;
+  }
+
+  #help-toggle {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(145, 170, 212, 0.14);
+    background: rgba(8, 12, 21, 0.72);
+    color: var(--text-soft);
+    font: inherit;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    backdrop-filter: blur(16px);
+    box-shadow: var(--shadow-md);
+    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+  }
+
+  #help-toggle:hover {
+    transform: translateY(-1px);
+    border-color: rgba(157, 189, 244, 0.22);
+    background: rgba(11, 16, 28, 0.84);
+  }
+
+  #help-toggle .toggle-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(126, 154, 255, 1), rgba(59, 219, 208, 1));
+    box-shadow: 0 0 10px rgba(95, 141, 255, 0.4);
   }
 
   .hint-chip__dot {
@@ -474,19 +479,19 @@
 
   #detail-toggle {
     position: absolute;
-    right: 20px;
-    bottom: 20px;
+    right: 14px;
+    bottom: 14px;
     z-index: 4;
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 11px 14px;
+    gap: 8px;
+    padding: 9px 12px;
     border: 1px solid rgba(145, 170, 212, 0.14);
     border-radius: 999px;
     background: rgba(8, 12, 21, 0.74);
     color: var(--text);
     font: inherit;
-    font-size: 12px;
+    font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     cursor: pointer;
@@ -511,10 +516,10 @@
 
   #inspector-shell {
     position: absolute;
-    top: 18px;
-    right: 18px;
-    bottom: 18px;
-    width: min(430px, calc(100% - 36px));
+    top: 12px;
+    right: 12px;
+    bottom: 56px;
+    width: min(360px, calc(100% - 24px));
     z-index: 3;
     pointer-events: none;
   }
@@ -524,7 +529,7 @@
     inset: 0;
     display: flex;
     flex-direction: column;
-    padding: 18px;
+    padding: 14px;
     pointer-events: auto;
     overflow: hidden;
     transform: translateX(0);
@@ -542,11 +547,11 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 14px;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
   }
 
   .inspector-kicker {
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: rgba(180, 199, 238, 0.7);
@@ -554,17 +559,17 @@
   }
 
   .inspector-title {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     letter-spacing: -0.04em;
   }
 
   .inspector-subtitle {
-    margin-top: 5px;
+    margin-top: 4px;
     color: var(--text-soft);
-    font-size: 12px;
-    line-height: 1.55;
-    max-width: 28ch;
+    font-size: 11px;
+    line-height: 1.45;
+    max-width: 24ch;
   }
 
   .inspector-badge {
@@ -608,15 +613,15 @@
   #detail-status,
   #detail-content {
     position: relative;
-    padding: 16px;
-    border-radius: 18px;
+    padding: 14px;
+    border-radius: 16px;
     background: linear-gradient(180deg, rgba(15, 23, 38, 0.82), rgba(9, 15, 27, 0.62));
     border: 1px solid rgba(145, 170, 212, 0.11);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
   }
 
   #detail-status {
-    margin-bottom: 14px;
+    margin-bottom: 10px;
   }
 
   .section-label {
@@ -792,34 +797,30 @@
       align-items: stretch;
     }
 
-    #stats {
+    .topbar-meta {
       justify-content: flex-start;
     }
 
     #inspector-shell {
-      width: min(390px, calc(100% - 36px));
+      width: min(340px, calc(100% - 24px));
     }
   }
 
   @media (max-width: 820px) {
     .app-shell {
-      padding: 12px;
-      gap: 12px;
+      padding: 10px;
+      gap: 10px;
     }
 
     #topbar {
-      padding: 16px;
+      padding: 10px 12px;
       min-height: auto;
     }
 
-    #repo-form {
-      grid-template-columns: 1fr;
-    }
-
     #graph-hint {
-      width: calc(100% - 24px);
+      width: calc(100% - 20px);
       left: 12px;
-      top: 12px;
+      top: 52px;
     }
 
     #inspector-shell {
@@ -863,22 +864,11 @@
 <div class="app-shell">
   <header id="topbar" class="glass-card">
     <div id="brand">
-      <div class="eyebrow">Code Exploration System</div>
-      <h1>DiscoverMap</h1>
-      <p>The graph stays primary. GitHub analysis feeds a DiscoverMap-style interaction layer so local structure reads first.</p>
+      <div class="eyebrow">Graph Explorer</div>
+      <h1>git-map</h1>
     </div>
 
     <div id="control-stack">
-      <form id="repo-form">
-        <label id="repo-wrap" for="repo-input" aria-label="Repository">
-          <svg class="search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M3.5 4.5h5m-5 5h13m-13 5h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-          <input id="repo-input" type="text" placeholder="owner/repo or https://github.com/owner/repo">
-        </label>
-        <button id="repo-submit" type="submit">Open Repo</button>
-      </form>
-
       <label id="search-wrap" for="search" aria-label="Search graph">
         <svg class="search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
           <path d="M8.75 15.5a6.75 6.75 0 1 1 0-13.5 6.75 6.75 0 0 1 0 13.5ZM13.5 13.5l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
@@ -888,11 +878,10 @@
       </label>
     </div>
 
-    <div id="stats">
-      <span class="stat" id="s-files"><span class="stat__label">Files</span><span class="stat__value">-</span></span>
-      <span class="stat" id="s-fns"><span class="stat__label">Fn</span><span class="stat__value">-</span></span>
-      <span class="stat" id="s-comps"><span class="stat__label">Comp</span><span class="stat__value">-</span></span>
-      <span class="stat" id="s-routes"><span class="stat__label">Routes</span><span class="stat__value">-</span></span>
+    <div class="topbar-meta">
+      <div class="repo-chip" id="repo-chip" aria-live="polite">
+        <span class="repo-chip__value" id="repo-label">Open a repository path</span>
+      </div>
     </div>
   </header>
 
@@ -901,10 +890,15 @@
     <div class="graph-vignette" aria-hidden="true"></div>
     <svg id="graph"></svg>
 
+    <button id="help-toggle" type="button" aria-pressed="false">
+      <span class="toggle-dot"></span>
+      <span id="help-toggle-label">Help</span>
+    </button>
+
     <aside id="graph-hint" class="floating-card glass-card">
-      <div class="hint-kicker">Explorer Guide</div>
+      <div class="hint-kicker">Guide</div>
       <div class="hint-title">Start broad, then commit to a local neighborhood.</div>
-      <div class="hint-copy">Overview shows files and route bridges when available. Hover previews local context. Clicking a node commits focus so unrelated graph regions fade away.</div>
+      <div class="hint-copy">Hover previews nearby structure. Clicking a node commits focus so unrelated graph regions fade and the local chain reads first.</div>
       <div class="hint-actions">
         <span class="hint-chip"><span class="hint-chip__dot"></span>Overview maps files and route bridges</span>
         <span class="hint-chip"><span class="hint-chip__dot"></span>Hover previews structure before drilling in</span>
@@ -929,9 +923,9 @@
       </section>
     </div>
 
-    <button id="detail-toggle" type="button" aria-pressed="true">
+    <button id="detail-toggle" type="button" aria-pressed="false">
       <span class="toggle-dot"></span>
-      <span id="detail-toggle-label">Hide Inspector</span>
+      <span id="detail-toggle-label">Show Inspector</span>
     </button>
   </main>
 </div>
@@ -979,6 +973,8 @@ const EDGE_STYLE = {
 const DRAW_ORDER = { fn: 1, comp: 2, route: 3, file: 4 }
 const DEFAULT_STATUS = 'Overview mode keeps the graph broad. Select a file, route, function, or component to fade unrelated regions and surface its local neighborhood.'
 const CHILD_RADIUS = 86
+const CONTEXT_CALL_CAP = 10
+const DENSE_LABEL_THRESHOLD = 48
 
 const state = {
   activeNodeId: null,
@@ -986,7 +982,12 @@ const state = {
   hoveredNodeId: null,
   visibleNodeIds: new Set(),
   visibleEdgeIds: new Set(),
+  contextNodeIds: new Set(),
+  contextEdgeIds: new Set(),
+  contextParentIds: new Set(),
+  loadedFiles: new Set(),
   repo: null,
+  index: null,
 }
 
 const fullGraph = {
@@ -996,17 +997,37 @@ const fullGraph = {
   primaryNodeIds: new Set(),
   routeIds: new Set(),
   fileIds: new Set(),
+  adjacency: new Map(),
+  edgeIdsByNode: new Map(),
 }
 
-let visibleGraph = { nodes: [], links: [], adjacency: new Map() }
+let visibleGraph = { nodes: [], links: [], adjacency: new Map(), edgeIdsByNode: new Map() }
 let simulation
 let svg
 let zoomBehavior
 let linkLayer
 let nodeLayer
 let currentTransform = d3.zoomIdentity
-let detailPanelVisible = true
+let detailPanelVisible = false
+let helpPanelVisible = false
 let searchTimer = null
+const fileDetailPromises = new Map()
+
+function overviewNotice() {
+  const overview = state.index?.overview || {}
+  if (overview.mode === 'capped' || overview.large_repo) {
+    return 'Large repository mode is showing a lightweight overview, not the full codebase. Search for a file or click into a visible file to load detail outside this first slice.'
+  }
+  return DEFAULT_STATUS
+}
+
+function overviewSubtitle() {
+  const overview = state.index?.overview || {}
+  if (overview.mode === 'capped' || overview.large_repo) {
+    return 'This initial view is intentionally capped for performance. Use search to surface files outside the first overview, then click a file to load its internal symbols and local relationships.'
+  }
+  return 'Primary file nodes establish the system-level view. Internal functions stay latent until a file becomes the focus target. Route bridges remain available when the backend can surface them.'
+}
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -1034,25 +1055,11 @@ function currentRepoFromPath() {
   return null
 }
 
-function normalizeRepoInput(value) {
-  const trimmed = value.trim()
-  if (!trimmed) return null
-  try {
-    const url = new URL(trimmed)
-    if (url.hostname === 'github.com') {
-      const parts = url.pathname.split('/').filter(Boolean)
-      if (parts.length >= 2) return { owner: parts[0], repo: parts[1] }
-    }
-  } catch (_) {}
-  const parts = trimmed.replace(/^\/+|\/+$/g, '').split('/')
-  if (parts.length >= 2) return { owner: parts[0], repo: parts[1] }
-  return null
-}
-
 function normalizeLanguage(language, path) {
-  const raw = String(language || '').toLowerCase()
+  const raw = String(language || '').trim().toLowerCase()
   if (raw === 'python' || raw === 'py') return 'py'
-  if (raw === 'typescript' || raw === 'ts' || raw === 'tsx') return 'ts'
+  if (raw === 'typescript' || raw === 'ts') return 'ts'
+  if (raw === 'tsx') return 'ts'
   if (raw === 'javascript' || raw === 'js' || raw === 'jsx') return 'js'
   const lowerPath = String(path || '').toLowerCase()
   if (lowerPath.endsWith('.py')) return 'py'
@@ -1065,6 +1072,7 @@ function nodeTheme(node) {
   if (node.type === 'route') {
     return { fill: NODE_TYPES.route.fill, stroke: NODE_TYPES.route.stroke, text: NODE_TYPES.route.text, badge: '#a8efe3' }
   }
+  if (node.type === 'file' && node.fileTheme) return node.fileTheme
   const lang = normalizeLanguage(node.lang, node.fullPath || node.fileId || node.id)
   const theme = LANGUAGE_THEME[lang] || LANGUAGE_THEME.unknown
   return theme[node.type] || LANGUAGE_THEME.unknown[node.type] || LANGUAGE_THEME.unknown.file
@@ -1094,20 +1102,29 @@ function resetGraphState() {
   state.hoveredNodeId = null
   state.visibleNodeIds = new Set()
   state.visibleEdgeIds = new Set()
-  visibleGraph = { nodes: [], links: [], adjacency: new Map() }
+  state.contextNodeIds = new Set()
+  state.contextEdgeIds = new Set()
+  state.contextParentIds = new Set()
+  state.loadedFiles = new Set()
+  state.index = null
+  visibleGraph = { nodes: [], links: [], adjacency: new Map(), edgeIdsByNode: new Map() }
   fullGraph.nodesById.clear()
   fullGraph.edgesById.clear()
   fullGraph.childrenByParent.clear()
   fullGraph.primaryNodeIds.clear()
   fullGraph.routeIds.clear()
   fullGraph.fileIds.clear()
+  fullGraph.adjacency.clear()
+  fullGraph.edgeIdsByNode.clear()
+  fileDetailPromises.clear()
 }
 
-function addNode(node) {
+function addNode(node, options = {}) {
   const existing = fullGraph.nodesById.get(node.id)
   if (existing) return existing
   fullGraph.nodesById.set(node.id, node)
-  if (NODE_TYPES[node.type]?.defaultVisible) fullGraph.primaryNodeIds.add(node.id)
+  const primaryVisible = options.primaryVisible ?? NODE_TYPES[node.type]?.defaultVisible
+  if (primaryVisible) fullGraph.primaryNodeIds.add(node.id)
   if (node.type === 'file') fullGraph.fileIds.add(node.id)
   if (node.type === 'route') fullGraph.routeIds.add(node.id)
   if (node.parentId) {
@@ -1119,13 +1136,22 @@ function addNode(node) {
 
 function addEdge(edge) {
   const key = edgeKey(edge)
-  if (!fullGraph.edgesById.has(key)) fullGraph.edgesById.set(key, { ...edge, id: key })
+  if (fullGraph.edgesById.has(key)) return
+  fullGraph.edgesById.set(key, { ...edge, id: key })
+  if (!fullGraph.adjacency.has(edge.source)) fullGraph.adjacency.set(edge.source, new Set())
+  if (!fullGraph.adjacency.has(edge.target)) fullGraph.adjacency.set(edge.target, new Set())
+  fullGraph.adjacency.get(edge.source).add(edge.target)
+  fullGraph.adjacency.get(edge.target).add(edge.source)
+  if (!fullGraph.edgeIdsByNode.has(edge.source)) fullGraph.edgeIdsByNode.set(edge.source, new Set())
+  if (!fullGraph.edgeIdsByNode.has(edge.target)) fullGraph.edgeIdsByNode.set(edge.target, new Set())
+  fullGraph.edgeIdsByNode.get(edge.source).add(key)
+  fullGraph.edgeIdsByNode.get(edge.target).add(key)
 }
 
-function buildFullGraph(index, chunks) {
+function buildOverviewGraph(index, routesChunk) {
   resetGraphState()
-  const routesChunk = chunks.chunk_routes || { routes: {} }
-  const fileEntries = Object.entries(index.file_map || {})
+  state.index = index
+  const fileEntries = index.overview?.file_paths || Object.keys(index.files || {})
   const routeEntries = Object.entries(index.route_map || {})
   const wrap = document.getElementById('canvas-wrap')
   const width = wrap.clientWidth
@@ -1134,66 +1160,28 @@ function buildFullGraph(index, chunks) {
   const routeCount = Math.max(routeEntries.length, 1)
   const fileRadius = Math.min(width, height) * 0.29
 
-  fileEntries.forEach(([path, chunkId], indexPosition) => {
-    const chunk = chunks[chunkId] || {}
-    const fileData = chunk.files?.[path] || {}
+  fileEntries.forEach((path, indexPosition) => {
+    const fileData = index.files?.[path] || {}
+    const chunkId = fileData.chunk_id || index.file_map?.[path] || 'chunk_root'
     const lang = normalizeLanguage(fileData.language, path)
     const angle = (indexPosition / fileCount) * Math.PI * 2 - Math.PI / 2
     addNode({
       id: path,
       type: 'file',
-      lang,
+      lang: String(fileData.language || lang || 'UNKNOWN').toUpperCase(),
+      langKey: lang,
+      fileTheme: fileData.language_theme || null,
       label: fileName(path),
       fullPath: path,
       chunkId,
       r: NODE_TYPES.file.size,
       expanded: false,
-      functionCount: Object.keys(fileData.functions || {}).length,
-      componentCount: Object.keys(fileData.components || {}).length,
-      imports: fileData.imports || [],
+      functionCount: fileData.function_count || 0,
+      componentCount: fileData.component_count || 0,
+      imports: [],
       routeConnections: [],
       x: width / 2 + Math.cos(angle) * fileRadius,
       y: height / 2 + Math.sin(angle) * fileRadius,
-    })
-
-    Object.entries(fileData.functions || {}).forEach(([name, fn], fnIndex) => {
-      addNode({
-        id: childNodeId(path, 'fn', name),
-        type: 'fn',
-        parentId: path,
-        fileId: path,
-        lang,
-        label: name,
-        fullPath: `${path}::${name}`,
-        signature: fn.signature || fn.display || name,
-        calls: fn.calls || [],
-        called_by: fn.called_by || [],
-        metadata: fn,
-        orbitAngle: ((fnIndex + 0.5) / Math.max(Object.keys(fileData.functions || {}).length + Object.keys(fileData.components || {}).length, 1)) * Math.PI * 2 - Math.PI / 2,
-        orbitRadius: CHILD_RADIUS,
-        r: NODE_TYPES.fn.size,
-      })
-      addEdge({ source: path, target: childNodeId(path, 'fn', name), etype: 'contains' })
-    })
-
-    const fnCount = Object.keys(fileData.functions || {}).length
-    Object.entries(fileData.components || {}).forEach(([name, comp], compIndex) => {
-      addNode({
-        id: childNodeId(path, 'comp', name),
-        type: 'comp',
-        parentId: path,
-        fileId: path,
-        lang,
-        label: name,
-        fullPath: `${path}::${name}`,
-        api_calls: comp.api_calls || [],
-        uses: comp.uses || [],
-        metadata: comp,
-        orbitAngle: ((fnCount + compIndex + 0.5) / Math.max(fnCount + Object.keys(fileData.components || {}).length, 1)) * Math.PI * 2 - Math.PI / 2,
-        orbitRadius: CHILD_RADIUS,
-        r: NODE_TYPES.comp.size,
-      })
-      addEdge({ source: path, target: childNodeId(path, 'comp', name), etype: 'contains' })
     })
   })
 
@@ -1218,13 +1206,9 @@ function buildFullGraph(index, chunks) {
     })
   })
 
-  for (const chunk of Object.values(chunks)) {
-    for (const [filePath, fileData] of Object.entries(chunk.files || {})) {
-      for (const importedPath of fileData.imports || []) {
-        if (fullGraph.nodesById.has(filePath) && fullGraph.nodesById.has(importedPath)) {
-          addEdge({ source: filePath, target: importedPath, etype: 'import' })
-        }
-      }
+  for (const importEdge of index.overview?.imports || []) {
+    if (fullGraph.nodesById.has(importEdge.source) && fullGraph.nodesById.has(importEdge.target)) {
+      addEdge({ source: importEdge.source, target: importEdge.target, etype: 'import' })
     }
   }
 
@@ -1241,45 +1225,24 @@ function buildFullGraph(index, chunks) {
     }
   })
 
-  for (const node of fullGraph.nodesById.values()) {
-    if (node.type === 'fn') {
-      for (const call of node.calls || []) {
-        if (typeof call !== 'string') {
-          const targetId = refToChildNodeId(call.ref, 'fn')
-          if (targetId && fullGraph.nodesById.has(targetId)) addEdge({ source: node.id, target: targetId, etype: 'call' })
-        }
-      }
-      for (const call of node.called_by || []) {
-        if (typeof call !== 'string') {
-          const sourceId = refToChildNodeId(call.ref, 'fn')
-          if (sourceId && fullGraph.nodesById.has(sourceId)) addEdge({ source: sourceId, target: node.id, etype: 'call' })
-        }
-      }
-    }
-    if (node.type === 'comp') {
-      for (const use of node.uses || []) {
-        if (typeof use !== 'string') {
-          const targetId = refToChildNodeId(use.ref, 'comp')
-          if (targetId && fullGraph.nodesById.has(targetId)) addEdge({ source: node.id, target: targetId, etype: 'uses' })
-        }
-      }
-    }
-  }
 }
 
 function buildVisibleGraph() {
   const visibleNodeIds = new Set(fullGraph.primaryNodeIds)
   const expandedChildren = state.expandedNodeId ? fullGraph.childrenByParent.get(state.expandedNodeId) || [] : []
   expandedChildren.forEach(childId => visibleNodeIds.add(childId))
+  state.contextNodeIds.forEach(nodeId => visibleNodeIds.add(nodeId))
 
   const links = []
   for (const edge of fullGraph.edgesById.values()) {
     if (!visibleNodeIds.has(edge.source) || !visibleNodeIds.has(edge.target)) continue
-    if (edge.etype === 'contains' && state.expandedNodeId !== edge.source) continue
+    if (edge.etype === 'contains' && state.expandedNodeId !== edge.source && !state.contextParentIds.has(edge.source)) continue
     if (edge.etype === 'call' || edge.etype === 'uses') {
       const sourceNode = fullGraph.nodesById.get(edge.source)
       const targetNode = fullGraph.nodesById.get(edge.target)
-      if (sourceNode?.parentId !== state.expandedNodeId || targetNode?.parentId !== state.expandedNodeId) continue
+      const localToExpanded = sourceNode?.parentId === state.expandedNodeId && targetNode?.parentId === state.expandedNodeId
+      const inContext = state.contextEdgeIds.has(edge.id)
+      if (!localToExpanded && !inContext) continue
     }
     links.push({ ...edge })
   }
@@ -1290,16 +1253,21 @@ function buildVisibleGraph() {
     .sort((a, b) => (DRAW_ORDER[a.type] || 9) - (DRAW_ORDER[b.type] || 9))
 
   const adjacency = new Map()
+  const edgeIdsByNode = new Map()
   links.forEach(link => {
     if (!adjacency.has(link.source)) adjacency.set(link.source, new Set())
     if (!adjacency.has(link.target)) adjacency.set(link.target, new Set())
     adjacency.get(link.source).add(link.target)
     adjacency.get(link.target).add(link.source)
+    if (!edgeIdsByNode.has(link.source)) edgeIdsByNode.set(link.source, new Set())
+    if (!edgeIdsByNode.has(link.target)) edgeIdsByNode.set(link.target, new Set())
+    edgeIdsByNode.get(link.source).add(link.id)
+    edgeIdsByNode.get(link.target).add(link.id)
   })
 
   state.visibleNodeIds = visibleNodeIds
   state.visibleEdgeIds = new Set(links.map(link => link.id))
-  visibleGraph = { nodes, links, adjacency }
+  visibleGraph = { nodes, links, adjacency, edgeIdsByNode }
 }
 
 function nodeContext(nodeId) {
@@ -1317,21 +1285,21 @@ function nodeContext(nodeId) {
   }
 
   if ((node?.type === 'fn' || node?.type === 'comp') && node.parentId) nodeIds.add(node.parentId)
-
-  visibleGraph.links.forEach(link => {
-    const sourceId = linkEndpointId(link.source)
-    const targetId = linkEndpointId(link.target)
-    if (nodeIds.has(sourceId) && nodeIds.has(targetId)) edgeIds.add(link.id)
-    if (sourceId === nodeId || targetId === nodeId) edgeIds.add(link.id)
+  ;(visibleGraph.edgeIdsByNode.get(nodeId) || new Set()).forEach(edgeId => edgeIds.add(edgeId))
+  nodeIds.forEach(relatedNodeId => {
+    ;(visibleGraph.edgeIdsByNode.get(relatedNodeId) || new Set()).forEach(edgeId => edgeIds.add(edgeId))
   })
 
   return { nodeIds, edgeIds }
 }
 
 function shouldShowLabel(node) {
+  if (visibleGraph.nodes.length > DENSE_LABEL_THRESHOLD && !state.activeNodeId && !state.hoveredNodeId) {
+    return node.type === 'file' || node.type === 'route'
+  }
   if (node.type === 'file' || node.type === 'route') return true
   if (node.type === 'fn' || node.type === 'comp') {
-    return state.expandedNodeId === node.parentId || state.activeNodeId === node.id || state.hoveredNodeId === node.id
+    return state.expandedNodeId === node.parentId || state.contextNodeIds.has(node.id) || state.activeNodeId === node.id || state.hoveredNodeId === node.id
   }
   return false
 }
@@ -1374,6 +1342,20 @@ function syncDetailPanelVisibility() {
   if (toggleButton) toggleButton.setAttribute('aria-pressed', detailPanelVisible ? 'true' : 'false')
 }
 
+function updateRepoLabel(repo = null) {
+  const label = document.getElementById('repo-label')
+  if (!label) return
+  label.textContent = repo ? `${repo.owner}/${repo.repo}` : 'Open a repository path'
+}
+
+function syncHelpPanelVisibility() {
+  document.body.classList.toggle('help-open', helpPanelVisible)
+  const toggleLabel = document.getElementById('help-toggle-label')
+  const toggleButton = document.getElementById('help-toggle')
+  if (toggleLabel) toggleLabel.textContent = helpPanelVisible ? 'Hide Help' : 'Help'
+  if (toggleButton) toggleButton.setAttribute('aria-pressed', helpPanelVisible ? 'true' : 'false')
+}
+
 function setupDetailPanelToggle() {
   const toggleButton = document.getElementById('detail-toggle')
   if (!toggleButton || toggleButton.dataset.bound === 'true') return
@@ -1384,8 +1366,239 @@ function setupDetailPanelToggle() {
   })
 }
 
+function setupHelpToggle() {
+  const toggleButton = document.getElementById('help-toggle')
+  if (!toggleButton || toggleButton.dataset.bound === 'true') return
+  toggleButton.dataset.bound = 'true'
+  toggleButton.addEventListener('click', () => {
+    helpPanelVisible = !helpPanelVisible
+    syncHelpPanelVisibility()
+  })
+}
+
+function overviewAngleForPath(path) {
+  const filePaths = state.index?.overview?.file_paths?.includes(path)
+    ? state.index.overview.file_paths
+    : Object.keys(state.index?.files || {}).sort()
+  const indexPosition = Math.max(filePaths.indexOf(path), 0)
+  const fileCount = Math.max(filePaths.length, 1)
+  return (indexPosition / fileCount) * Math.PI * 2 - Math.PI / 2
+}
+
+function ensureFileNode(path, options = {}) {
+  const existing = fullGraph.nodesById.get(path)
+  if (existing) {
+    if (options.primaryVisible) fullGraph.primaryNodeIds.add(path)
+    return existing
+  }
+
+  const fileData = state.index?.files?.[path]
+  if (!fileData) return null
+
+  const wrap = document.getElementById('canvas-wrap')
+  const width = wrap.clientWidth
+  const height = wrap.clientHeight
+  const angle = overviewAngleForPath(path)
+  const radius = Math.min(width, height) * 0.29
+  const lang = normalizeLanguage(fileData.language, path)
+  return addNode({
+    id: path,
+    type: 'file',
+    lang: String(fileData.language || lang || 'UNKNOWN').toUpperCase(),
+    langKey: lang,
+    fileTheme: fileData.language_theme || null,
+    label: fileName(path),
+    fullPath: path,
+    chunkId: fileData.chunk_id || state.index?.file_map?.[path] || 'chunk_root',
+    r: NODE_TYPES.file.size,
+    expanded: false,
+    functionCount: fileData.function_count || 0,
+    componentCount: fileData.component_count || 0,
+    imports: [],
+    routeConnections: [],
+    x: width / 2 + Math.cos(angle) * radius,
+    y: height / 2 + Math.sin(angle) * radius,
+  }, options)
+}
+
+function applyFileDetail(path, detail) {
+  const fileNode = ensureFileNode(path)
+  if (!fileNode || !detail) return
+
+  fileNode.functionCount = detail.function_count ?? Object.keys(detail.functions || {}).length
+  fileNode.componentCount = detail.component_count ?? Object.keys(detail.components || {}).length
+  fileNode.imports = detail.imports || []
+  fileNode.fileTheme = detail.language_theme || fileNode.fileTheme
+  fileNode.lang = String(detail.language || fileNode.lang || 'UNKNOWN').toUpperCase()
+
+  const lang = normalizeLanguage(detail.language, path)
+  const totalChildren = Math.max(Object.keys(detail.functions || {}).length + Object.keys(detail.components || {}).length, 1)
+
+  Object.entries(detail.functions || {}).forEach(([name, fn], fnIndex) => {
+    addNode({
+      id: childNodeId(path, 'fn', name),
+      type: 'fn',
+      parentId: path,
+      fileId: path,
+      lang,
+      label: name,
+      fullPath: `${path}::${name}`,
+      signature: fn.signature || fn.display || name,
+      calls: fn.calls || [],
+      called_by: fn.called_by || [],
+      metadata: fn,
+      orbitAngle: ((fnIndex + 0.5) / totalChildren) * Math.PI * 2 - Math.PI / 2,
+      orbitRadius: CHILD_RADIUS,
+      r: NODE_TYPES.fn.size,
+    }, { primaryVisible: false })
+    addEdge({ source: path, target: childNodeId(path, 'fn', name), etype: 'contains' })
+  })
+
+  const fnCount = Object.keys(detail.functions || {}).length
+  Object.entries(detail.components || {}).forEach(([name, comp], compIndex) => {
+    addNode({
+      id: childNodeId(path, 'comp', name),
+      type: 'comp',
+      parentId: path,
+      fileId: path,
+      lang,
+      label: name,
+      fullPath: `${path}::${name}`,
+      api_calls: comp.api_calls || [],
+      uses: comp.uses || [],
+      metadata: comp,
+      orbitAngle: ((fnCount + compIndex + 0.5) / totalChildren) * Math.PI * 2 - Math.PI / 2,
+      orbitRadius: CHILD_RADIUS,
+      r: NODE_TYPES.comp.size,
+    }, { primaryVisible: false })
+    addEdge({ source: path, target: childNodeId(path, 'comp', name), etype: 'contains' })
+  })
+
+  for (const importedPath of detail.imports || []) {
+    if (!state.index?.files?.[importedPath]) continue
+    ensureFileNode(importedPath, { primaryVisible: false })
+    addEdge({ source: path, target: importedPath, etype: 'import' })
+  }
+
+  for (const node of fullGraph.nodesById.values()) {
+    if (node.fileId !== path) continue
+    if (node.type === 'fn') {
+      for (const call of node.calls || []) {
+        if (typeof call !== 'string') {
+          const targetId = refToChildNodeId(call.ref, 'fn')
+          if (targetId && fullGraph.nodesById.has(targetId)) addEdge({ source: node.id, target: targetId, etype: 'call' })
+        }
+      }
+      for (const call of node.called_by || []) {
+        if (typeof call !== 'string') {
+          const sourceId = refToChildNodeId(call.ref, 'fn')
+          if (sourceId && fullGraph.nodesById.has(sourceId)) addEdge({ source: sourceId, target: node.id, etype: 'call' })
+        }
+      }
+    }
+    if (node.type === 'comp') {
+      for (const use of node.uses || []) {
+        if (typeof use !== 'string') {
+          const targetId = refToChildNodeId(use.ref, 'comp')
+          if (targetId && fullGraph.nodesById.has(targetId)) addEdge({ source: node.id, target: targetId, etype: 'uses' })
+        }
+      }
+    }
+  }
+
+  state.loadedFiles.add(path)
+}
+
+async function loadFileDetail(path, includeCallables = []) {
+  const normalizedIncludes = [...new Set(includeCallables.filter(Boolean))].sort()
+  if (state.loadedFiles.has(path) && !normalizedIncludes.length) {
+    return {
+      path,
+      functions: {},
+      components: {},
+      imports: fullGraph.nodesById.get(path)?.imports || [],
+    }
+  }
+  if (
+    state.loadedFiles.has(path)
+    && normalizedIncludes.length
+    && normalizedIncludes.every(name => fullGraph.nodesById.has(childNodeId(path, 'fn', name)))
+  ) {
+    return {
+      path,
+      functions: {},
+      components: {},
+      imports: fullGraph.nodesById.get(path)?.imports || [],
+    }
+  }
+  const cacheKey = `${path}::${normalizedIncludes.join(',')}`
+  if (fileDetailPromises.has(cacheKey)) return fileDetailPromises.get(cacheKey)
+
+  const owner = encodeURIComponent(state.repo.owner)
+  const repo = encodeURIComponent(state.repo.repo)
+  const params = new URLSearchParams({ path })
+  normalizedIncludes.forEach(name => params.append('include_callable', name))
+  const promise = fetch(`/api/discover/${owner}/${repo}/file?${params.toString()}`)
+    .then(async response => {
+      const payload = await response.json()
+      if (!response.ok) throw new Error(payload.detail || `File request failed with status ${response.status}`)
+      applyFileDetail(path, payload)
+      return payload
+    })
+    .finally(() => fileDetailPromises.delete(cacheKey))
+
+  fileDetailPromises.set(cacheKey, promise)
+  return promise
+}
+
+async function preloadVisibleFileDetails() {
+  const filePaths = state.index?.overview?.file_paths || []
+  const largeRepo = state.index?.overview?.large_repo
+  const overviewMode = state.index?.overview?.mode
+  if (largeRepo || overviewMode === 'capped') return
+  await Promise.all(filePaths.map(path => loadFileDetail(path)))
+}
+
+async function loadCallableContext(node) {
+  state.contextNodeIds = new Set()
+  state.contextEdgeIds = new Set()
+  state.contextParentIds = new Set()
+
+  if (!node || node.type !== 'fn') return
+
+  const relationRefs = [...(node.calls || []), ...(node.called_by || [])]
+    .filter(item => item && typeof item !== 'string' && item.ref)
+    .slice(0, CONTEXT_CALL_CAP)
+
+  const includesByFile = new Map()
+  relationRefs.forEach(call => {
+    const filePath = nodeLabelPath(call.ref)
+    const name = nodeLabelName(call.ref)
+    if (!filePath || !name || filePath === node.fileId) return
+    if (!includesByFile.has(filePath)) includesByFile.set(filePath, new Set())
+    includesByFile.get(filePath).add(name)
+  })
+
+  for (const [filePath, names] of includesByFile.entries()) {
+    ensureFileNode(filePath, { primaryVisible: false })
+    await loadFileDetail(filePath, [...names])
+    state.contextNodeIds.add(filePath)
+    state.contextParentIds.add(filePath)
+    names.forEach(name => {
+      const neighborId = childNodeId(filePath, 'fn', name)
+      if (fullGraph.nodesById.has(neighborId)) {
+        state.contextNodeIds.add(neighborId)
+        const forward = edgeKey({ source: node.id, target: neighborId, etype: 'call' })
+        const reverse = edgeKey({ source: neighborId, target: node.id, etype: 'call' })
+        if (fullGraph.edgesById.has(forward)) state.contextEdgeIds.add(forward)
+        if (fullGraph.edgesById.has(reverse)) state.contextEdgeIds.add(reverse)
+      }
+    })
+  }
+}
+
 function semanticTargetX(node, width) {
-  if (node.parentId && state.expandedNodeId === node.parentId) {
+  if (node.parentId && (state.expandedNodeId === node.parentId || state.contextParentIds.has(node.parentId))) {
     const parent = fullGraph.nodesById.get(node.parentId)
     return parent ? parent.x + Math.cos(node.orbitAngle || 0) * (node.orbitRadius || CHILD_RADIUS) : width / 2
   }
@@ -1397,7 +1610,7 @@ function semanticTargetX(node, width) {
 }
 
 function semanticTargetY(node, height) {
-  if (node.parentId && state.expandedNodeId === node.parentId) {
+  if (node.parentId && (state.expandedNodeId === node.parentId || state.contextParentIds.has(node.parentId))) {
     const parent = fullGraph.nodesById.get(node.parentId)
     return parent ? parent.y + Math.sin(node.orbitAngle || 0) * (node.orbitRadius || CHILD_RADIUS) : height / 2
   }
@@ -1409,7 +1622,7 @@ function childOrbitForce() {
   let localNodes = []
   function force(alpha) {
     localNodes.forEach(node => {
-      if (!node.parentId || state.expandedNodeId !== node.parentId) return
+      if (!node.parentId || (state.expandedNodeId !== node.parentId && !state.contextParentIds.has(node.parentId))) return
       const parent = fullGraph.nodesById.get(node.parentId)
       if (!parent) return
       const tx = parent.x + Math.cos(node.orbitAngle || 0) * (node.orbitRadius || CHILD_RADIUS)
@@ -1496,7 +1709,9 @@ function setupSVG() {
     .force('child-orbit', childOrbitForce())
     .force('center', d3.forceCenter(width / 2, height / 2))
     .alphaDecay(0.08)
+    .alphaMin(0.02)
     .velocityDecay(0.4)
+    .on('end', () => simulation.stop())
 }
 
 function centerOnNode(node, scale = 1.05) {
@@ -1517,7 +1732,7 @@ function renderDetailPanel() {
   if (inspectorMode) inspectorMode.textContent = activeNode ? `${activeNode.type} focus` : 'Overview'
   statusNode.innerHTML = `
     <div class="section-label">State</div>
-    <div class="status-copy">${escapeHtml(activeNode ? `${activeNode.label} is in focus. Nearby structure remains bright while unrelated regions fall back, so the local chain reads first.` : DEFAULT_STATUS)}</div>
+    <div class="status-copy">${escapeHtml(activeNode ? `${activeNode.label} is in focus. Nearby structure remains bright while unrelated regions fall back, so the local chain reads first.` : overviewNotice())}</div>
   `
 
   if (!activeNode) {
@@ -1527,7 +1742,7 @@ function renderDetailPanel() {
         <span class="detail-pill">Overview</span>
         <div class="detail-name">${escapeHtml(state.repo ? `${state.repo.owner}/${state.repo.repo}` : 'Repository map')}</div>
       </div>
-      <div class="detail-subtitle">Primary file nodes establish the system-level view. Internal functions stay latent until a file becomes the focus target. Route bridges remain available when the backend can surface them.</div>
+      <div class="detail-subtitle">${escapeHtml(overviewSubtitle())}</div>
       <div class="detail-grid">
         <div class="detail-card"><div class="k">Visible now</div><div class="v">${visibleGraph.nodes.filter(node => !node.parentId).length} primary nodes</div></div>
         <div class="detail-card"><div class="k">Expanded file</div><div class="v">${state.expandedNodeId ? escapeHtml(fileName(state.expandedNodeId)) : 'None'}</div></div>
@@ -1540,6 +1755,7 @@ function renderDetailPanel() {
           <span class="detail-chip">Select a file to reveal local functions</span>
           <span class="detail-chip">Function calls render as orange structural links</span>
           <span class="detail-chip">Search expands hidden matches automatically</span>
+          <span class="detail-chip">Files outside the first overview appear when you search or focus into them</span>
         </div>
       </div>
     `
@@ -1667,7 +1883,7 @@ function rerender(reheat = 0.16) {
   buildVisibleGraph()
 
   visibleGraph.nodes.forEach(node => {
-    if (node.parentId && state.expandedNodeId === node.parentId) {
+    if (node.parentId && (state.expandedNodeId === node.parentId || state.contextParentIds.has(node.parentId))) {
       const parent = fullGraph.nodesById.get(node.parentId)
       if (parent && (typeof node.x !== 'number' || typeof node.y !== 'number')) {
         node.x = parent.x + Math.cos(node.orbitAngle || 0) * (node.orbitRadius || CHILD_RADIUS)
@@ -1731,7 +1947,7 @@ function rerender(reheat = 0.16) {
         })
         .on('end', (event, node) => {
           if (!event.active) simulation.alphaTarget(0)
-          if (node.parentId && state.expandedNodeId === node.parentId) {
+          if (node.parentId && (state.expandedNodeId === node.parentId || state.contextParentIds.has(node.parentId))) {
             node.fx = null
             node.fy = null
             return
@@ -1819,19 +2035,37 @@ function clearFocus() {
   state.activeNodeId = null
   state.expandedNodeId = null
   state.hoveredNodeId = null
+  state.contextNodeIds = new Set()
+  state.contextEdgeIds = new Set()
+  state.contextParentIds = new Set()
   if (simulation) rerender(0.08)
 }
 
-function focusNode(nodeId, options = {}) {
+async function focusNode(nodeId, options = {}) {
   const node = fullGraph.nodesById.get(nodeId)
   if (!node) return
 
   if (node.type === 'file') {
+    await loadFileDetail(node.id)
     state.expandedNodeId = options.toggleExpand ? (state.expandedNodeId === node.id ? null : node.id) : null
+    state.contextNodeIds = new Set()
+    state.contextEdgeIds = new Set()
+    state.contextParentIds = new Set()
   } else if (node.type === 'route') {
     state.expandedNodeId = null
+    state.contextNodeIds = new Set()
+    state.contextEdgeIds = new Set()
+    state.contextParentIds = new Set()
   } else if (node.parentId) {
+    await loadFileDetail(node.parentId, node.type === 'fn' ? [node.label] : [])
     state.expandedNodeId = node.parentId
+    if (node.type === 'fn') {
+      await loadCallableContext(node)
+    } else {
+      state.contextNodeIds = new Set()
+      state.contextEdgeIds = new Set()
+      state.contextParentIds = new Set()
+    }
   }
 
   state.activeNodeId = node.id
@@ -1839,12 +2073,12 @@ function focusNode(nodeId, options = {}) {
   centerOnNode(node, node.type === 'route' ? 1.02 : 1.08)
 }
 
-function handleClick(node) {
+async function handleClick(node) {
   if (node.type === 'file') {
-    focusNode(node.id, { toggleExpand: true })
+    await focusNode(node.id, { toggleExpand: true })
     return
   }
-  focusNode(node.id)
+  await focusNode(node.id)
 }
 
 function nodeSearchScore(node, query) {
@@ -1870,10 +2104,25 @@ function findBestNodeMatch(query) {
       bestNode = node
     }
   }
+  if (!bestNode && state.index?.files) {
+    for (const path of Object.keys(state.index.files)) {
+      const summary = state.index.files[path]
+      const score = nodeSearchScore({
+        id: path,
+        type: 'file',
+        label: summary.label || fileName(path),
+        fullPath: path,
+      }, query)
+      if (score > bestScore) {
+        bestScore = score
+        bestNode = ensureFileNode(path, { primaryVisible: true })
+      }
+    }
+  }
   return bestNode
 }
 
-function runSearch(query) {
+async function runSearch(query) {
   if (!query) {
     clearFocus()
     return
@@ -1892,19 +2141,14 @@ function runSearch(query) {
     return
   }
   if (match.type === 'file') {
-    focusNode(match.id, { toggleExpand: false, reheat: 0.12 })
+    await focusNode(match.id, { toggleExpand: false, reheat: 0.12 })
     return
   }
   if (match.type === 'route') {
-    focusNode(match.id, { reheat: 0.12 })
+    await focusNode(match.id, { reheat: 0.12 })
     return
   }
-  focusNode(match.id, { reheat: 0.14 })
-}
-
-function setStat(id, value) {
-  const node = document.querySelector(`#${id} .stat__value`)
-  if (node) node.textContent = String(value)
+  await focusNode(match.id, { reheat: 0.14 })
 }
 
 function setStatus(message) {
@@ -1936,9 +2180,9 @@ function setupSpotlight() {
 
 async function loadRepo(owner, repo) {
   state.repo = { owner, repo }
-  document.getElementById('repo-input').value = `${owner}/${repo}`
+  updateRepoLabel(state.repo)
   document.getElementById('search').value = ''
-  setStatus(`Loading ${owner}/${repo}. The graph will preserve DiscoverMap focus, hover, and dimming behavior while adapting git-map analysis data.`)
+  setStatus(`Loading ${owner}/${repo}. The graph will preserve the current focus, hover, and dimming behavior while updating to this repository.`)
   setEmptyDetail(`${owner}/${repo}`, 'Fetching repository analysis and compatibility chunks.')
 
   try {
@@ -1946,47 +2190,30 @@ async function loadRepo(owner, repo) {
     const index = await indexResponse.json()
     if (!indexResponse.ok) throw new Error(index.detail || `Request failed with status ${indexResponse.status}`)
 
-    setStat('s-files', index.total_files ?? 0)
-    setStat('s-fns', index.total_functions ?? 0)
-    setStat('s-comps', index.total_components ?? 0)
-    setStat('s-routes', index.total_routes ?? 0)
+    const routesResponse = await fetch(`/api/discover/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/chunk/chunk_routes`)
+    const routesChunk = await routesResponse.json()
+    if (!routesResponse.ok) throw new Error(routesChunk.detail || `Chunk request failed with status ${routesResponse.status}`)
 
-    const chunkEntries = await Promise.all(
-      (index.chunks || []).map(async chunkId => {
-        const response = await fetch(`/api/discover/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/chunk/${encodeURIComponent(chunkId)}`)
-        const chunk = await response.json()
-        if (!response.ok) throw new Error(chunk.detail || `Chunk request failed with status ${response.status}`)
-        return [chunkId, chunk]
-      })
-    )
-
-    buildFullGraph(index, Object.fromEntries(chunkEntries))
+    buildOverviewGraph(index, routesChunk)
     setupSVG()
     rerender(0.18)
+    setStatus(overviewNotice())
+    setEmptyDetail(`${owner}/${repo}`, overviewSubtitle())
+    const loadedRepoKey = `${owner}/${repo}`
+    preloadVisibleFileDetails().then(() => {
+      const activeRepoKey = state.repo ? `${state.repo.owner}/${state.repo.repo}` : ''
+      if (activeRepoKey !== loadedRepoKey) return
+      rerender(0.08)
+    }).catch(() => {})
   } catch (error) {
     resetGraphState()
-    setStat('s-files', '-')
-    setStat('s-fns', '-')
-    setStat('s-comps', '-')
-    setStat('s-routes', '-')
     if (svg) svg.selectAll('*').remove()
     setStatus(error.message || 'Failed to load repository graph.')
     setEmptyDetail('Load failed', 'The graph could not be initialized for this repository.')
   }
 }
 
-function setupRepoForm() {
-  document.getElementById('repo-form').addEventListener('submit', event => {
-    event.preventDefault()
-    const parsed = normalizeRepoInput(document.getElementById('repo-input').value)
-    if (!parsed) {
-      setStatus('Enter owner/repo or a full GitHub URL.')
-      return
-    }
-    window.history.pushState({}, '', `/${parsed.owner}/${parsed.repo}`)
-    loadRepo(parsed.owner, parsed.repo)
-  })
-
+function setupRepoRouting() {
   window.addEventListener('popstate', () => {
     const repo = currentRepoFromPath()
     if (repo) {
@@ -1995,20 +2222,19 @@ function setupRepoForm() {
     }
     resetGraphState()
     if (svg) svg.selectAll('*').remove()
-    setStat('s-files', '-')
-    setStat('s-fns', '-')
-    setStat('s-comps', '-')
-    setStat('s-routes', '-')
-    setStatus('Paste a GitHub URL or open /owner/repo to load a repository graph.')
+    updateRepoLabel(null)
+    setStatus('Open /owner/repo to load a repository graph.')
     setEmptyDetail('Repository map', 'Primary file nodes and route bridges appear after a repository is loaded.')
   })
 }
 
 function init() {
   syncDetailPanelVisibility()
+  syncHelpPanelVisibility()
   setupDetailPanelToggle()
+  setupHelpToggle()
   setupSpotlight()
-  setupRepoForm()
+  setupRepoRouting()
 
   document.getElementById('search').addEventListener('input', event => {
     const query = event.target.value.trim()
@@ -2029,7 +2255,8 @@ function init() {
     rerender(0)
   })
 
-  setStatus('Paste a GitHub URL or open /owner/repo to load a repository graph.')
+  updateRepoLabel(null)
+  setStatus('Open /owner/repo to load a repository graph.')
   setEmptyDetail('Repository map', 'Primary file nodes and route bridges appear after a repository is loaded.')
 
   const repo = currentRepoFromPath()
