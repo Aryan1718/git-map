@@ -37,7 +37,7 @@ The system has two parts:
 ## Current Project Structure
 
 ```text
-github-kb/
+git-map/
 ├── README.md
 ├── agents.md
 ├── requirements.txt
