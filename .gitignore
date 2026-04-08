@@ -39,6 +39,8 @@ dist/
 *.egg-info/
 .eggs/
 pip-wheel-metadata/
+node_modules/
+frontend/dist/
 
 # Logs and runtime files
 *.log
