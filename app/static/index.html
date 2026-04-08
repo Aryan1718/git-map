@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repo Knowledge Graph</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1320;
+    --bg-soft: rgba(12, 19, 32, 0.84);
+    --panel: #121b2d;
+    --panel-soft: rgba(18, 27, 45, 0.88);
+    --border: #21304c;
+    --border-strong: #34507c;
+    --text: #d8e4f8;
+    --text-soft: #a2b6d5;
+    --text-muted: #7083a3;
+    --shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+    --teal: #59d0c2;
+    --teal-soft: #133a3c;
+    --amber: #f3a25d;
+    --amber-soft: #45250d;
+    --purple: #b29bff;
+    --purple-soft: #2d2452;
+    --gray: #aab6c9;
+    --gray-soft: #273243;
+    --link-contains: #455976;
+    --link-calls: #e58b47;
+    --link-ref: #8ba0ba;
+    --py-file-fill: #15314b;
+    --py-file-stroke: #6ec1ff;
+    --py-file-text: #d8f2ff;
+    --py-def-fill: #2b2554;
+    --py-def-stroke: #c5a8ff;
+    --py-def-text: #f0e7ff;
+    --py-class-fill: #0f4750;
+    --py-class-stroke: #68e0d2;
+    --py-class-text: #d6fffa;
+    --js-file-fill: #443310;
+    --js-file-stroke: #ffd166;
+    --js-file-text: #fff0bf;
+    --js-def-fill: #4a2416;
+    --js-def-stroke: #ff9c73;
+    --js-def-text: #ffe0d4;
+    --js-class-fill: #3a3a14;
+    --js-class-stroke: #d8ef72;
+    --js-class-text: #f8ffd8;
+    --ts-file-fill: #102e4c;
+    --ts-file-stroke: #62b7ff;
+    --ts-file-text: #d7ecff;
+    --ts-def-fill: #163c60;
+    --ts-def-stroke: #6fd3ff;
+    --ts-def-text: #d8f8ff;
+    --ts-class-fill: #262c63;
+    --ts-class-stroke: #9da5ff;
+    --ts-class-text: #e6e8ff;
+    --jsx-file-fill: #12343b;
+    --jsx-file-stroke: #53e0cc;
+    --jsx-file-text: #d5fff9;
+    --jsx-def-fill: #183f36;
+    --jsx-def-stroke: #6ff2a8;
+    --jsx-def-text: #ddffe8;
+    --jsx-class-fill: #1e3156;
+    --jsx-class-stroke: #83c3ff;
+    --jsx-class-text: #dcebff;
+    --misc-file-fill: #233143;
+    --misc-file-stroke: #aab6c9;
+    --misc-file-text: #e0e8f5;
+    --misc-def-fill: #3f2a4f;
+    --misc-def-stroke: #d0a8ff;
+    --misc-def-text: #f2e6ff;
+    --misc-class-fill: #294352;
+    --misc-class-stroke: #88d9ff;
+    --misc-class-text: #def6ff;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "SF Pro Display", "Segoe UI", sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(circle at top left, rgba(89, 208, 194, 0.10), transparent 30%),
+      radial-gradient(circle at top right, rgba(178, 155, 255, 0.12), transparent 24%),
+      linear-gradient(180deg, #0b111c 0%, #0d1320 100%);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  #topbar {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-soft);
+    backdrop-filter: blur(14px);
+    box-shadow: var(--shadow);
+    z-index: 2;
+  }
+
+  #brand h1 {
+    margin: 0;
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  #brand p {
+    margin: 4px 0 0;
+    color: var(--text-muted);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  #repo-form {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    max-width: 620px;
+  }
+
+  .field {
+    flex: 1;
+    border: 1px solid var(--border);
+    background: rgba(8, 14, 24, 0.92);
+    color: var(--text);
+    border-radius: 12px;
+    padding: 11px 14px;
+    font-size: 13px;
+    outline: none;
+  }
+
+  .field:focus {
+    border-color: var(--border-strong);
+    box-shadow: 0 0 0 3px rgba(89, 208, 194, 0.12);
+  }
+
+  #open-btn {
+    border: 1px solid #1e6e69;
+    background: linear-gradient(180deg, #175953 0%, #103e3a 100%);
+    color: #d7faf5;
+    border-radius: 12px;
+    padding: 0 16px;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+  }
+
+  #open-btn:hover {
+    filter: brightness(1.05);
+  }
+
+  #stats {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .stat {
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--text-soft);
+    background: rgba(10, 16, 28, 0.8);
+    font-size: 11px;
+  }
+
+  #canvas-wrap {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  #graph {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  #hint {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    max-width: 280px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: rgba(12, 19, 32, 0.84);
+    color: var(--text-soft);
+    font-size: 11px;
+    line-height: 1.5;
+    pointer-events: none;
+    backdrop-filter: blur(10px);
+  }
+
+  #hint strong {
+    color: #f1f6ff;
+  }
+
+  #loading {
+    position: absolute;
+    inset: 0;
+    display: none;
+    place-items: center;
+    background: rgba(8, 12, 20, 0.58);
+    z-index: 3;
+  }
+
+  #loading.show {
+    display: grid;
+  }
+
+  #loading-card {
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--panel-soft);
+    color: var(--text-soft);
+    box-shadow: var(--shadow);
+  }
+
+  #details {
+    display: grid;
+    grid-template-columns: minmax(270px, 1.15fr) minmax(360px, 1.85fr);
+    gap: 18px;
+    padding: 16px 18px 18px;
+    border-top: 1px solid var(--border);
+    background: rgba(9, 14, 24, 0.92);
+    backdrop-filter: blur(12px);
+    min-height: 220px;
+    max-height: 38vh;
+    overflow: auto;
+  }
+
+  .panel {
+    background: var(--panel-soft);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 16px;
+  }
+
+  .panel h2 {
+    margin: 0 0 10px;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .panel p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-soft);
+    line-height: 1.6;
+  }
+
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 11px;
+    color: var(--text-soft);
+    background: rgba(10, 16, 28, 0.84);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .node-name {
+    font-size: 16px;
+    font-weight: 650;
+  }
+
+  .node-subtitle {
+    margin: 0 0 14px;
+    color: var(--text-soft);
+    font-size: 12px;
+    line-height: 1.6;
+    word-break: break-word;
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+
+  .meta-card {
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: rgba(8, 14, 24, 0.84);
+  }
+
+  .meta-card .k {
+    color: var(--text-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+
+  .meta-card .v {
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+
+  .section {
+    margin-top: 14px;
+  }
+
+  .section h3 {
+    margin: 0 0 8px;
+    color: var(--text-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .chip {
+    padding: 6px 9px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(8, 14, 24, 0.84);
+    color: var(--text-soft);
+    font-size: 12px;
+  }
+
+  .empty {
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+
+  .link {
+    fill: none;
+    stroke-linecap: round;
+  }
+
+  .node {
+    cursor: pointer;
+  }
+
+  .node-label {
+    pointer-events: none;
+    font-weight: 550;
+    paint-order: stroke;
+    stroke: rgba(4, 8, 14, 0.9);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+  }
+
+  @media (max-width: 980px) {
+    #topbar {
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+
+    #repo-form,
+    #stats {
+      width: 100%;
+      max-width: none;
+    }
+
+    #details {
+      grid-template-columns: 1fr;
+      max-height: 42vh;
+    }
+
+    #hint {
+      left: 14px;
+      right: auto;
+      max-width: 250px;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="topbar">
+  <div id="brand">
+    <h1>Repo Knowledge Graph</h1>
+    <p>DiscoverMap-style repo view for GitHub source graphs</p>
+  </div>
+  <form id="repo-form">
+    <input id="repo-input" class="field" type="text" placeholder="owner/repo or https://github.com/owner/repo">
+    <button id="open-btn" type="submit">Open Graph</button>
+  </form>
+  <div id="stats">
+    <span class="stat" id="s-repo">Repo: -</span>
+    <span class="stat" id="s-files">Files: -</span>
+    <span class="stat" id="s-nodes">Nodes: -</span>
+    <span class="stat" id="s-links">Links: -</span>
+  </div>
+</div>
+
+<div id="canvas-wrap">
+  <svg id="graph"></svg>
+  <div id="hint">
+    <strong>Language glow:</strong> `.py` blue, `.js` gold, `.ts` cyan, `.jsx/.tsx` mint.<br>
+    Files stay visible by default.<br>
+    Click a file to expand local symbols.
+  </div>
+  <div id="loading">
+    <div id="loading-card">Loading repository graph...</div>
+  </div>
+</div>
+
+<div id="details">
+  <div class="panel" id="status-panel"></div>
+  <div class="panel" id="detail-panel"></div>
+</div>
+
+<script>
+const TYPE_THEME = {
+  file: { fill: '#12363a', stroke: '#59d0c2', text: '#d4fff8', size: 24 },
+  def: { fill: '#45250d', stroke: '#f3a25d', text: '#ffe1c6', size: 12 },
+  class: { fill: '#2d2452', stroke: '#b29bff', text: '#e8ddff', size: 14 },
+  ref: { fill: '#273243', stroke: '#aab6c9', text: '#e0e8f5', size: 10 },
+}
+
+const LANGUAGE_THEME = {
+  py: {
+    file: { fill: '#15314b', stroke: '#6ec1ff', text: '#d8f2ff' },
+    def: { fill: '#2b2554', stroke: '#c5a8ff', text: '#f0e7ff' },
+    class: { fill: '#0f4750', stroke: '#68e0d2', text: '#d6fffa' },
+  },
+  js: {
+    file: { fill: '#443310', stroke: '#ffd166', text: '#fff0bf' },
+    def: { fill: '#4a2416', stroke: '#ff9c73', text: '#ffe0d4' },
+    class: { fill: '#3a3a14', stroke: '#d8ef72', text: '#f8ffd8' },
+  },
+  ts: {
+    file: { fill: '#102e4c', stroke: '#62b7ff', text: '#d7ecff' },
+    def: { fill: '#163c60', stroke: '#6fd3ff', text: '#d8f8ff' },
+    class: { fill: '#262c63', stroke: '#9da5ff', text: '#e6e8ff' },
+  },
+  jsx: {
+    file: { fill: '#12343b', stroke: '#53e0cc', text: '#d5fff9' },
+    def: { fill: '#183f36', stroke: '#6ff2a8', text: '#ddffe8' },
+    class: { fill: '#1e3156', stroke: '#83c3ff', text: '#dcebff' },
+  },
+  misc: {
+    file: { fill: '#233143', stroke: '#aab6c9', text: '#e0e8f5' },
+    def: { fill: '#3f2a4f', stroke: '#d0a8ff', text: '#f2e6ff' },
+    class: { fill: '#294352', stroke: '#88d9ff', text: '#def6ff' },
+  },
+}
+
+const LINK_STYLE = {
+  contains: { stroke: '#455976', width: 1.05, dash: '3,5', opacity: 0.52 },
+  calls: { stroke: '#e58b47', width: 1.55, dash: null, opacity: 0.74 },
+}
+
+const state = {
+  graph: null,
+  visible: { nodes: [], links: [] },
+  activeNodeId: null,
+  expandedFileId: null,
+  searchTerm: '',
+}
+
+let svg
+let zoomLayer
+let linkLayer
+let nodeLayer
+let simulation
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
+function currentRepoFromPath() {
+  const parts = window.location.pathname.split('/').filter(Boolean)
+  if (parts.length >= 2) return { owner: parts[0], repo: parts[1] }
+  return null
+}
+
+function normalizeRepoInput(value) {
+  const trimmed = value.trim()
+  if (!trimmed) return null
+
+  try {
+    const url = new URL(trimmed)
+    if (url.hostname === 'github.com') {
+      const parts = url.pathname.split('/').filter(Boolean)
+      if (parts.length >= 2) return { owner: parts[0], repo: parts[1] }
+    }
+  } catch (_) {}
+
+  const parts = trimmed.replace(/^\/+|\/+$/g, '').split('/')
+  if (parts.length >= 2) return { owner: parts[0], repo: parts[1] }
+  return null
+}
+
+function setLoading(message, show) {
+  const overlay = document.getElementById('loading')
+  document.getElementById('loading-card').textContent = message
+  overlay.classList.toggle('show', show)
+}
+
+function setStatusHtml(html) {
+  document.getElementById('status-panel').innerHTML = html
+}
+
+function setDetailHtml(html) {
+  document.getElementById('detail-panel').innerHTML = html
+}
+
+function resetPanels() {
+  setStatusHtml(`
+    <h2>Status</h2>
+    <p>Paste a GitHub URL or open <code>/owner/repo</code>. This page fetches the repo JSON from the backend and renders a force graph similar to DiscoverMap.</p>
+  `)
+  setDetailHtml(`
+    <h2>Selection</h2>
+    <p>Nothing selected yet. Click a file or symbol to inspect connected nodes, source file, line number, and relationship counts.</p>
+  `)
+}
+
+function updateStats(meta) {
+  document.getElementById('s-repo').textContent = `Repo: ${meta ? `${meta.owner}/${meta.repo}` : '-'}`
+  document.getElementById('s-files').textContent = `Files: ${meta?.file_count ?? '-'}`
+  document.getElementById('s-nodes').textContent = `Nodes: ${meta?.node_count ?? '-'}`
+  document.getElementById('s-links').textContent = `Links: ${meta?.link_count ?? '-'}`
+}
+
+function enrichGraph(payload) {
+  const nodesById = new Map()
+  const childrenByFile = new Map()
+  const parentByChild = new Map()
+  const linksByNode = new Map()
+
+  payload.nodes.forEach(node => {
+    const copy = { ...node }
+    copy.type = TYPE_THEME[copy.type] ? copy.type : 'ref'
+    nodesById.set(copy.id, copy)
+    if (!linksByNode.has(copy.id)) linksByNode.set(copy.id, [])
+  })
+
+  payload.links.forEach((link, index) => {
+    const copy = { ...link, id: `${link.type}:${link.source}->${link.target}:${index}` }
+    if (!linksByNode.has(copy.source)) linksByNode.set(copy.source, [])
+    if (!linksByNode.has(copy.target)) linksByNode.set(copy.target, [])
+    linksByNode.get(copy.source).push(copy)
+    linksByNode.get(copy.target).push(copy)
+    if (copy.type === 'contains') {
+      if (!childrenByFile.has(copy.source)) childrenByFile.set(copy.source, [])
+      childrenByFile.get(copy.source).push(copy.target)
+      parentByChild.set(copy.target, copy.source)
+    }
+  })
+
+  payload.nodes.forEach(node => {
+    if (!parentByChild.has(node.id) && node.file && nodesById.has(node.file)) {
+      parentByChild.set(node.id, node.file)
+      if (!childrenByFile.has(node.file)) childrenByFile.set(node.file, [])
+      childrenByFile.get(node.file).push(node.id)
+    }
+  })
+
+  const fileIds = payload.nodes.filter(node => node.type === 'file').map(node => node.id)
+  return { ...payload, nodesById, childrenByFile, parentByChild, linksByNode, fileIds }
+}
+
+function fileName(path) {
+  return String(path || '').split('/').pop() || path
+}
+
+function extensionFamily(path) {
+  const lower = String(path || '').toLowerCase()
+  if (lower.endsWith('.py')) return 'py'
+  if (lower.endsWith('.jsx') || lower.endsWith('.tsx')) return 'jsx'
+  if (lower.endsWith('.ts')) return 'ts'
+  if (lower.endsWith('.js') || lower.endsWith('.mjs') || lower.endsWith('.cjs')) return 'js'
+  return 'misc'
+}
+
+function nodeFamily(node) {
+  return extensionFamily(node.file || node.id)
+}
+
+function themeForNode(node) {
+  const family = LANGUAGE_THEME[nodeFamily(node)] || LANGUAGE_THEME.misc
+  return family[node.type] || TYPE_THEME[node.type] || TYPE_THEME.ref
+}
+
+function computeVisibleGraph() {
+  if (!state.graph) return { nodes: [], links: [] }
+
+  const search = state.searchTerm.trim().toLowerCase()
+  const visibleIds = new Set(state.graph.fileIds)
+
+  if (state.expandedFileId) {
+    for (const childId of state.graph.childrenByFile.get(state.expandedFileId) || []) {
+      visibleIds.add(childId)
+    }
+  }
+
+  if (search) {
+    for (const node of state.graph.nodes) {
+      const haystack = `${node.label} ${node.id} ${node.file || ''}`.toLowerCase()
+      if (haystack.includes(search)) {
+        visibleIds.add(node.id)
+        const parentId = state.graph.parentByChild.get(node.id)
+        if (parentId) visibleIds.add(parentId)
+        for (const link of state.graph.linksByNode.get(node.id) || []) {
+          visibleIds.add(link.source)
+          visibleIds.add(link.target)
+        }
+      }
+    }
+  }
+
+  const nodes = state.graph.nodes
+    .filter(node => visibleIds.has(node.id))
+    .map(node => ({ ...node }))
+
+  const links = state.graph.links
+    .filter(link => visibleIds.has(link.source) && visibleIds.has(link.target))
+    .filter(link => {
+      if (link.type !== 'contains') return true
+      return state.expandedFileId === link.source || search.length > 0
+    })
+    .map(link => ({ ...link }))
+
+  return { nodes, links }
+}
+
+function nodeOpacity(node) {
+  if (!state.searchTerm) return 1
+  const haystack = `${node.label} ${node.id} ${node.file || ''}`.toLowerCase()
+  return haystack.includes(state.searchTerm.toLowerCase()) ? 1 : 0.22
+}
+
+function linkOpacity(link) {
+  if (!state.activeNodeId) return LINK_STYLE[link.type]?.opacity ?? 0.4
+  return link.source === state.activeNodeId || link.target === state.activeNodeId
+    ? Math.max(LINK_STYLE[link.type]?.opacity ?? 0.4, 0.92)
+    : 0.08
+}
+
+function relatedNodeIds(nodeId) {
+  const related = new Set()
+  for (const link of state.graph.linksByNode.get(nodeId) || []) {
+    related.add(link.source)
+    related.add(link.target)
+  }
+  return related
+}
+
+function shouldShowNodeLabel(node) {
+  if (node.type === 'file') return true
+  if (state.searchTerm) return true
+  if (node.id === state.activeNodeId) return true
+  const parentId = state.graph?.parentByChild.get(node.id)
+  return Boolean(parentId && parentId === state.expandedFileId)
+}
+
+function updateDetailPanel(nodeId) {
+  if (!state.graph || !nodeId || !state.graph.nodesById.has(nodeId)) {
+    setDetailHtml(`
+      <h2>Selection</h2>
+      <p>Nothing selected yet. Click a file or symbol to inspect connected nodes, source file, line number, and relationship counts.</p>
+    `)
+    return
+  }
+
+  const node = state.graph.nodesById.get(nodeId)
+  const relatedLinks = state.graph.linksByNode.get(nodeId) || []
+  const outgoing = relatedLinks.filter(link => link.source === nodeId)
+  const incoming = relatedLinks.filter(link => link.target === nodeId)
+  const relatedNames = [...relatedNodeIds(nodeId)]
+    .filter(id => id !== nodeId)
+    .map(id => state.graph.nodesById.get(id))
+    .filter(Boolean)
+    .slice(0, 14)
+
+  const metaCards = [
+    node.file ? `<div class="meta-card"><div class="k">File</div><div class="v">${escapeHtml(node.file)}</div></div>` : '',
+    node.line != null ? `<div class="meta-card"><div class="k">Line</div><div class="v">${escapeHtml(node.line)}</div></div>` : '',
+    `<div class="meta-card"><div class="k">Weight</div><div class="v">${escapeHtml(node.weight)}</div></div>`,
+    `<div class="meta-card"><div class="k">Outgoing</div><div class="v">${escapeHtml(outgoing.length)}</div></div>`,
+    `<div class="meta-card"><div class="k">Incoming</div><div class="v">${escapeHtml(incoming.length)}</div></div>`,
+  ].filter(Boolean).join('')
+
+  setDetailHtml(`
+    <h2>Selection</h2>
+    <div class="title-row">
+      <span class="pill">${escapeHtml(node.type)}</span>
+      <div class="node-name">${escapeHtml(node.label)}</div>
+    </div>
+    <p class="node-subtitle">${escapeHtml(node.id)}</p>
+    <div class="meta-grid">${metaCards}</div>
+    <div class="section">
+      <h3>Connected Nodes</h3>
+      <div class="chips">
+        ${relatedNames.length ? relatedNames.map(item => `<span class="chip">${escapeHtml(item.label)} <small>(${escapeHtml(item.type)})</small></span>`).join('') : '<span class="empty">No connected nodes.</span>'}
+      </div>
+    </div>
+  `)
+}
+
+function updateStatusPanel(meta, message) {
+  setStatusHtml(`
+    <h2>Status</h2>
+    <p>${escapeHtml(message)}</p>
+    ${meta ? `<div class="section"><h3>Repo</h3><div class="chips">
+      <span class="chip">${escapeHtml(meta.owner)}/${escapeHtml(meta.repo)}</span>
+      <span class="chip">commit ${escapeHtml(meta.commit_sha.slice(0, 12))}</span>
+      <span class="chip">${meta.cached ? 'cache hit' : 'fresh fetch'}</span>
+    </div></div>` : ''}
+  `)
+}
+
+function fitGraph() {
+  const wrap = document.getElementById('canvas-wrap')
+  const width = wrap.clientWidth
+  const height = wrap.clientHeight
+  const svgSel = d3.select('#graph')
+  svgSel.attr('viewBox', [0, 0, width, height])
+}
+
+function renderGraph() {
+  fitGraph()
+
+  const wrap = document.getElementById('canvas-wrap')
+  const width = wrap.clientWidth
+  const height = wrap.clientHeight
+  const { nodes, links } = computeVisibleGraph()
+  state.visible = { nodes, links }
+
+  if (!svg) {
+    svg = d3.select('#graph')
+    svg.selectAll('*').remove()
+    zoomLayer = svg.append('g')
+    linkLayer = zoomLayer.append('g')
+    nodeLayer = zoomLayer.append('g')
+    svg.call(
+      d3.zoom()
+        .scaleExtent([0.25, 3])
+        .on('zoom', event => zoomLayer.attr('transform', event.transform))
+    )
+  }
+
+  if (simulation) simulation.stop()
+
+  nodes.forEach(node => {
+    if (node.x == null || node.y == null) {
+      if (node.type === 'file') {
+        const fileIndex = state.graph.fileIds.indexOf(node.id)
+        const angle = (fileIndex / Math.max(state.graph.fileIds.length, 1)) * Math.PI * 2
+        node.x = width / 2 + Math.cos(angle) * Math.min(width, height) * 0.28
+        node.y = height / 2 + Math.sin(angle) * Math.min(width, height) * 0.28
+      } else {
+        const parentId = state.graph.parentByChild.get(node.id)
+        const parent = nodes.find(item => item.id === parentId)
+        node.x = parent ? parent.x + (Math.random() - 0.5) * 120 : width / 2
+        node.y = parent ? parent.y + (Math.random() - 0.5) * 120 : height / 2
+      }
+    }
+  })
+
+  simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id).distance(link => link.type === 'contains' ? 58 : 135).strength(link => link.type === 'contains' ? 0.75 : 0.3))
+    .force('charge', d3.forceManyBody().strength(node => node.type === 'file' ? -680 : -260))
+    .force('center', d3.forceCenter(width / 2, height / 2))
+    .force('collision', d3.forceCollide().radius(node => (TYPE_THEME[node.type]?.size ?? 10) + 14))
+
+  const linkSel = linkLayer
+    .selectAll('line')
+    .data(links, d => d.id)
+    .join('line')
+    .attr('class', 'link')
+    .attr('stroke', d => LINK_STYLE[d.type]?.stroke ?? '#6d7f9d')
+    .attr('stroke-width', d => LINK_STYLE[d.type]?.width ?? 1)
+    .attr('stroke-dasharray', d => LINK_STYLE[d.type]?.dash ?? null)
+    .attr('opacity', d => linkOpacity(d))
+
+  const nodeSel = nodeLayer
+    .selectAll('g.node')
+    .data(nodes, d => d.id)
+    .join(enter => {
+      const group = enter.append('g').attr('class', 'node')
+      group.append('circle')
+      group.append('text').attr('class', 'node-label')
+      return group
+    })
+    .attr('opacity', d => {
+      if (!state.activeNodeId) return nodeOpacity(d)
+      if (d.id === state.activeNodeId || relatedNodeIds(state.activeNodeId).has(d.id)) return 1
+      return 0.16
+    })
+    .on('click', (_, node) => {
+      state.activeNodeId = node.id
+      if (node.type === 'file') {
+        state.expandedFileId = state.expandedFileId === node.id ? null : node.id
+      }
+      updateDetailPanel(node.id)
+      renderGraph()
+    })
+
+  nodeSel.select('circle')
+    .attr('r', d => (TYPE_THEME[d.type]?.size ?? 10) + Math.max(0, (Number(d.weight) || 0) * 3))
+    .attr('fill', d => themeForNode(d).fill)
+    .attr('stroke', d => themeForNode(d).stroke)
+    .attr('stroke-width', d => d.id === state.activeNodeId ? 2.8 : 1.6)
+    .style('filter', d => `drop-shadow(0 0 10px ${themeForNode(d).stroke}55)`)
+
+  nodeSel.selectAll('title').remove()
+  nodeSel.append('title').text(d => d.id)
+
+  nodeSel.select('text')
+    .attr('fill', d => themeForNode(d).text)
+    .attr('font-size', d => d.type === 'file' ? 12 : 10)
+    .attr('text-anchor', 'middle')
+    .attr('dy', d => (TYPE_THEME[d.type]?.size ?? 10) + 16)
+    .style('display', d => shouldShowNodeLabel(d) ? 'block' : 'none')
+    .text(d => d.type === 'file' ? fileName(d.id) : d.label)
+
+  nodeSel.call(
+    d3.drag()
+      .on('start', (event, d) => {
+        if (!event.active) simulation.alphaTarget(0.3).restart()
+        d.fx = d.x
+        d.fy = d.y
+      })
+      .on('drag', (event, d) => {
+        d.fx = event.x
+        d.fy = event.y
+      })
+      .on('end', (event, d) => {
+        if (!event.active) simulation.alphaTarget(0)
+        d.fx = null
+        d.fy = null
+      })
+  )
+
+  simulation.on('tick', () => {
+    linkSel
+      .attr('x1', d => d.source.x)
+      .attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x)
+      .attr('y2', d => d.target.y)
+
+    nodeSel.attr('transform', d => `translate(${d.x}, ${d.y})`)
+  })
+}
+
+async function loadGraph(owner, repo) {
+  setLoading(`Loading ${owner}/${repo}...`, true)
+  updateStatusPanel(null, `Fetching ${owner}/${repo} from the backend.`)
+
+  try {
+    const response = await fetch(`/api/graph/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`)
+    const payload = await response.json()
+    if (!response.ok) {
+      throw new Error(payload.detail || `Request failed with status ${response.status}`)
+    }
+
+    state.graph = enrichGraph(payload)
+    state.activeNodeId = null
+    state.expandedFileId = null
+    state.searchTerm = ''
+    document.getElementById('repo-input').value = `${owner}/${repo}`
+    updateStats(payload.meta)
+    updateStatusPanel(payload.meta, `Graph ready. ${payload.meta.file_count} files were parsed and mapped into ${payload.meta.node_count} nodes.`)
+    updateDetailPanel(null)
+    renderGraph()
+  } catch (error) {
+    updateStats(null)
+    resetPanels()
+    updateStatusPanel(null, error.message || 'Failed to load repository graph.')
+    if (nodeLayer) nodeLayer.selectAll('*').remove()
+    if (linkLayer) linkLayer.selectAll('*').remove()
+  } finally {
+    setLoading('Loading repository graph...', false)
+  }
+}
+
+function onSearchChange(event) {
+  state.searchTerm = event.target.value.trim()
+  renderGraph()
+}
+
+function installSearchInput() {
+  const input = document.createElement('input')
+  input.className = 'field'
+  input.id = 'search-input'
+  input.type = 'text'
+  input.placeholder = 'Search visible graph'
+  input.addEventListener('input', onSearchChange)
+  document.getElementById('repo-form').appendChild(input)
+}
+
+function setupForm() {
+  document.getElementById('repo-form').addEventListener('submit', event => {
+    event.preventDefault()
+    const parsed = normalizeRepoInput(document.getElementById('repo-input').value)
+    if (!parsed) {
+      updateStatusPanel(null, 'Enter owner/repo or a full GitHub URL.')
+      return
+    }
+    window.history.pushState({}, '', `/${parsed.owner}/${parsed.repo}`)
+    loadGraph(parsed.owner, parsed.repo)
+  })
+
+  window.addEventListener('popstate', () => {
+    const repo = currentRepoFromPath()
+    if (repo) loadGraph(repo.owner, repo.repo)
+    else {
+      updateStats(null)
+      resetPanels()
+      if (nodeLayer) nodeLayer.selectAll('*').remove()
+      if (linkLayer) linkLayer.selectAll('*').remove()
+    }
+  })
+}
+
+function init() {
+  installSearchInput()
+  setupForm()
+  resetPanels()
+  fitGraph()
+  window.addEventListener('resize', () => renderGraph())
+
+  const repo = currentRepoFromPath()
+  if (repo) {
+    loadGraph(repo.owner, repo.repo)
+  }
+}
+
+init()
+</script>
+</body>
+</html>
