@@ -2,13 +2,13 @@ import logging
 import tempfile
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
 from app.config import Settings, get_settings
 from app.core.cache import BaseCache
-from app.services.discovermap_adapter import build_discovermap_payload
+from app.services.discovermap_adapter import build_discovermap_file_payload, build_discovermap_payload
 from app.services import graph_builder
 from app.services.github import GitHubClient, GitHubError
 from app.services.repomap import RepomapError, extract_tags
@@ -175,6 +175,22 @@ async def discovermap_chunk_route(
     if chunk is None:
         raise HTTPException(status_code=404, detail=f"Chunk not found: {chunk_id}")
     return chunk
+
+
+@router.get("/api/discover/{owner}/{repo}/file")
+async def discovermap_file_route(
+    owner: str,
+    repo: str,
+    path: str = Query(...),
+    include_callable: list[str] = Query(default_factory=list),
+    settings: Settings = Depends(get_settings),
+    cache: BaseCache = Depends(get_cache),
+):
+    payload = await analyze_repo_discovermap(owner, repo, settings, cache)
+    file_payload = build_discovermap_file_payload(payload, path, include_callables=include_callable)
+    if file_payload is None:
+        raise HTTPException(status_code=404, detail=f"File not found: {path}")
+    return file_payload
 
 
 @router.get("/{owner}/{repo}", response_class=HTMLResponse)
