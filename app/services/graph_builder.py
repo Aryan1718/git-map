@@ -2,8 +2,10 @@ import logging
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 from app.services.repomap import Tag
+from app.services.semantic_normalizer import NormalizedSymbol, normalize_definitions
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +18,12 @@ class Node:
     weight: float = 1.0
     file: str | None = None
     line: int | None = None
+    normalized_kind: str | None = None
+    raw_kind: str | None = None
+    qualified_name: str | None = None
+    parent_qualified_name: str | None = None
+    is_definition: bool | None = None
+    raw_metadata: dict[str, Any] = field(default_factory=dict)
 
     def dict(self) -> dict:
         data = {
@@ -28,6 +36,18 @@ class Node:
             data["file"] = self.file
         if self.line is not None:
             data["line"] = self.line
+        if self.normalized_kind is not None:
+            data["normalized_kind"] = self.normalized_kind
+        if self.raw_kind is not None:
+            data["raw_kind"] = self.raw_kind
+        if self.qualified_name is not None:
+            data["qualified_name"] = self.qualified_name
+        if self.parent_qualified_name is not None:
+            data["parent_qualified_name"] = self.parent_qualified_name
+        if self.is_definition is not None:
+            data["is_definition"] = self.is_definition
+        if self.raw_metadata:
+            data["raw_metadata"] = self.raw_metadata
         return data
 
 
@@ -66,47 +86,64 @@ def build(tags: list[Tag], file_list: list[str]) -> GraphResult:
                 weight=1.0,
             )
 
-    name_to_def_ids: dict[str, list[str]] = defaultdict(list)
-    defs_by_file: dict[str, list[Tag]] = defaultdict(list)
+    normalized_symbols = normalize_definitions(tags)
+    symbols_by_id: dict[str, NormalizedSymbol] = {symbol.id: symbol for symbol in normalized_symbols}
+    callable_symbols_by_file: dict[str, list[NormalizedSymbol]] = defaultdict(list)
+    callable_lookup_exact: dict[str, list[str]] = defaultdict(list)
+    callable_lookup_short: dict[str, list[str]] = defaultdict(list)
     file_call_counts: dict[tuple[str, str], int] = defaultdict(int)
 
-    for tag in tags:
-        if tag.kind != "def":
-            continue
-
-        symbol_id = f"{tag.rel_fname}::{tag.name}"
-        if symbol_id not in nodes:
-            nodes[symbol_id] = Node(
-                id=symbol_id,
-                label=tag.name,
-                type="def",
+    for symbol in normalized_symbols:
+        if symbol.id not in nodes:
+            nodes[symbol.id] = Node(
+                id=symbol.id,
+                label=symbol.display_name,
+                type=symbol.normalized_kind,
                 weight=0.0,
-                file=tag.rel_fname,
-                line=tag.line,
+                file=symbol.file,
+                line=symbol.line,
+                normalized_kind=symbol.normalized_kind,
+                raw_kind=symbol.raw_kind,
+                qualified_name=symbol.qualified_name,
+                parent_qualified_name=symbol.parent_qualified_name,
+                is_definition=symbol.is_definition,
+                raw_metadata=symbol.raw_metadata,
             )
-            if tag.rel_fname in nodes:
-                links.append(Link(source=tag.rel_fname, target=symbol_id, type="contains"))
 
-        if symbol_id not in name_to_def_ids[tag.name]:
-            name_to_def_ids[tag.name].append(symbol_id)
-        defs_by_file[tag.rel_fname].append(tag)
+        parent_id = (
+            f"{symbol.file}::{symbol.parent_qualified_name}"
+            if symbol.parent_qualified_name and f"{symbol.file}::{symbol.parent_qualified_name}" in symbols_by_id
+            else symbol.file
+        )
+        if parent_id in nodes:
+            links.append(Link(source=parent_id, target=symbol.id, type="contains"))
 
-    for rel_fname in defs_by_file:
-        defs_by_file[rel_fname].sort(key=lambda item: (item.line, item.name))
+        if symbol.normalized_kind == "callable":
+            callable_symbols_by_file[symbol.file].append(symbol)
+            callable_lookup_exact[symbol.qualified_name].append(symbol.id)
+            callable_lookup_short[symbol.display_name].append(symbol.id)
+
+    for rel_fname in callable_symbols_by_file:
+        callable_symbols_by_file[rel_fname].sort(key=lambda item: (item.line, item.qualified_name))
 
     ref_counts: dict[str, int] = defaultdict(int)
 
     for tag in tags:
-        if tag.kind != "ref":
+        if _is_definition_tag(tag):
             continue
 
-        source_id = _resolve_ref_source_id(tag, defs_by_file, nodes)
-        for target_id in name_to_def_ids.get(tag.name, []):
+        source_id = _resolve_ref_source_id(tag, callable_symbols_by_file, symbols_by_id)
+        target_ids = _resolve_ref_target_ids(tag.name, callable_lookup_exact, callable_lookup_short)
+
+        if not target_ids:
+            continue
+
+        for target_id in target_ids:
             ref_counts[target_id] += 1
-            if source_id != target_id:
+            if source_id is not None and source_id != target_id:
                 links.append(Link(source=source_id, target=target_id, type="calls"))
 
-            source_file = _node_file(source_id, nodes)
+            source_file = _node_file(source_id, nodes) if source_id is not None else tag.rel_fname
             target_file = _node_file(target_id, nodes)
             if source_file and target_file and source_file != target_file:
                 file_call_counts[(source_file, target_file)] += 1
@@ -117,7 +154,7 @@ def build(tags: list[Tag], file_list: list[str]) -> GraphResult:
             nodes[symbol_id].weight = round(count / max_refs, 4)
 
     for node in nodes.values():
-        if node.type == "def" and node.weight == 0.0:
+        if node.type in {"callable", "type", "module"} and node.weight == 0.0:
             node.weight = 0.05
 
     unique_links: list[Link] = []
@@ -141,29 +178,52 @@ def build(tags: list[Tag], file_list: list[str]) -> GraphResult:
     return result
 
 
-def _resolve_ref_source_id(tag: Tag, defs_by_file: dict[str, list[Tag]], nodes: dict[str, Node]) -> str:
-    defs = defs_by_file.get(tag.rel_fname, [])
+def _resolve_ref_source_id(
+    tag: Tag,
+    callable_symbols_by_file: dict[str, list[NormalizedSymbol]],
+    symbols_by_id: dict[str, NormalizedSymbol],
+) -> str | None:
+    defs = callable_symbols_by_file.get(tag.rel_fname, [])
     if not defs or tag.line < 0:
-        return tag.rel_fname
+        return None
 
-    current_def: Tag | None = None
+    current_def: NormalizedSymbol | None = None
     next_def_line: int | None = None
 
-    for index, def_tag in enumerate(defs):
-        if def_tag.line > tag.line:
-            next_def_line = def_tag.line
+    for index, def_symbol in enumerate(defs):
+        if def_symbol.line > tag.line:
+            next_def_line = def_symbol.line
             break
-        current_def = def_tag
+        current_def = def_symbol
         next_def_line = defs[index + 1].line if index + 1 < len(defs) else None
 
     if current_def is None:
-        return tag.rel_fname
+        return None
 
     if next_def_line is not None and tag.line >= next_def_line:
-        return tag.rel_fname
+        return None
 
-    source_id = f"{current_def.rel_fname}::{current_def.name}"
-    return source_id if source_id in nodes else tag.rel_fname
+    return current_def.id if current_def.id in symbols_by_id else None
+
+
+def _resolve_ref_target_ids(
+    name: str,
+    callable_lookup_exact: dict[str, list[str]],
+    callable_lookup_short: dict[str, list[str]],
+) -> list[str]:
+    exact_matches = callable_lookup_exact.get(name, [])
+    if exact_matches:
+        return exact_matches
+
+    short_name = name.rsplit("::", 1)[-1].rsplit("#", 1)[-1].rsplit(".", 1)[-1]
+    short_matches = callable_lookup_short.get(short_name, [])
+    return short_matches if len(short_matches) == 1 else []
+
+
+def _is_definition_tag(tag: Tag) -> bool:
+    if tag.is_definition is not None:
+        return tag.is_definition
+    return (tag.kind or "").strip().lower() in {"def", "definition", "decl", "declaration"}
 
 
 def _node_file(node_id: str, nodes: dict[str, Node]) -> str | None:
