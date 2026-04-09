@@ -1,173 +1,122 @@
-# Repo Knowledge Graph
+<h1 align="center">GIT-MAP</h1>
 
-This project turns a GitHub repository into an interactive knowledge graph.
+<p align="center">
+  <strong>Turn any public GitHub repository into an interactive knowledge graph.</strong>
+</p>
 
-Given a GitHub repo like:
+<p align="center">
+  <a href="https://git-map.com"><img src="https://img.shields.io/badge/website-git--map.com-blue?style=flat-square" alt="Website"></a>
+  <a href="https://github.com/csuftitan/github-kb/stargazers"><img src="https://img.shields.io/github/stars/csuftitan/github-kb?style=flat-square" alt="Stars"></a>
+  <a href="#"><img src="https://img.shields.io/badge/backend-FastAPI-009688?style=flat-square" alt="FastAPI"></a>
+  <a href="#"><img src="https://img.shields.io/badge/frontend-React%20%2B%20D3-222222?style=flat-square" alt="React and D3"></a>
+  <a href="#"><img src="https://img.shields.io/badge/parser-Aider%20RepoMap-orange?style=flat-square" alt="Aider RepoMap"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10%2B-blue.svg?style=flat-square" alt="Python 3.10+"></a>
+  <a href="#"><img src="https://img.shields.io/badge/status-active-success?style=flat-square" alt="Status"></a>
+  <a href="#"><img src="https://img.shields.io/badge/license-add%20your%20license-lightgrey?style=flat-square" alt="License"></a>
+</p>
 
-```text
-https://github.com/Aryan1718/mini-redis
+<br>
+
+GIT-MAP analyzes a GitHub repository with the GitHub API, extracts structural symbols with Aider RepoMap and Tree-sitter, and returns a graph that can be explored visually in the browser. Instead of scanning raw files manually, you get a map of files, definitions, and cross-file relationships.
+
+<p align="center">
+  <img src="docs/preview.png" alt="GIT-MAP preview" width="85%" />
+</p>
+
+---
+
+## Demo Video
+
+Drop your demo GIF into `docs/git-map.gif`.
+
+<p align="center">
+  <img src="docs/git-map.gif" alt="GIT-MAP demo" width="85%" />
+</p>
+
+If you want, you can also wrap that GIF in a link to a full video later.
+
+Example:
+
+```md
+<p align="center">
+  <a href="https://www.loom.com/share/your-video-id">
+    <img src="docs/git-map.gif" alt="Watch the demo" width="85%" />
+  </a>
+</p>
 ```
 
-you can open:
+---
 
-```text
-http://localhost:8000/Aryan1718/mini-redis
+## Quick Start
+
+```bash
+git clone <your-repo-url>
+cd github-kb
+
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -r requirements.txt
+
+cp .env.example .env
+uvicorn app.main:app --reload --port 8000
 ```
 
-and the app will fetch the repo, analyze supported source files, build a graph of files and symbols, and render it in the browser.
+In a second terminal:
 
-## What This App Does
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-The system has two parts:
-
-1. A FastAPI backend that:
-   - talks to the GitHub API
-   - downloads supported source files into a temporary directory
-   - runs Aider RepoMap / Tree-sitter to extract definitions and references
-   - converts those tags into a graph JSON response
-   - caches the result in memory
-
-2. A browser UI that:
-   - loads the graph JSON from the backend
-   - renders it with D3.js as a force-directed graph
-   - colors nodes by file type such as `.py`, `.js`, `.ts`, `.jsx`, `.tsx`
-   - lets you click files to expand internal symbols
-   - shows node details and live graph filtering
-
-## Current Project Structure
+Then open:
 
 ```text
-git-map/
-├── README.md
-├── agents.md
-├── requirements.txt
-├── .env.example
-├── .gitignore
-├── pytest.ini
-├── app/
-│   ├── main.py
-│   ├── config.py
-│   ├── api/
-│   │   └── routes.py
-│   ├── core/
-│   │   └── cache.py
-│   ├── services/
-│   │   ├── github.py
-│   │   ├── repomap.py
-│   │   └── graph_builder.py
-│   └── static/
-│       └── index.html
-└── tests/
-    └── test_graph_builder.py
+http://localhost:5173/tiangolo/fastapi
 ```
+
+or call the API directly:
+
+```bash
+curl -X POST http://localhost:8000/analyze-repo \
+  -H "Content-Type: application/json" \
+  -d '{"owner":"tiangolo","repo":"fastapi"}'
+```
+
+---
 
 ## How It Works
 
-### 1. Browser Request
+<p align="center">
+  <img src="docs/architecture.png" alt="GIT-MAP architecture" width="90%" />
+</p>
 
-When you open a URL like:
+The flow is straightforward:
 
-```text
-http://localhost:8000/Aryan1718/enterprise-rag-platform
-```
+1. The frontend accepts a GitHub repository path.
+2. The FastAPI backend resolves the latest commit SHA.
+3. The GitHub API returns the repository tree and file contents.
+4. Supported source files are downloaded into a temporary workspace.
+5. Aider RepoMap extracts definitions and references with Tree-sitter.
+6. The graph builder converts those tags into `nodes` and `links`.
+7. The frontend renders the graph with D3 for interactive exploration.
 
-the server returns the graph UI page.
-
-That page reads the current path and then requests:
-
-```text
-/api/graph/Aryan1718/enterprise-rag-platform
-```
-
-### 2. GitHub Fetch
-
-The backend:
-
-- gets the latest commit SHA from GitHub
-- gets the full repository tree
-- filters only supported source files
-- limits the repo to `MAX_FILES`
-- downloads those files to a temporary directory
-
-This logic is in [app/services/github.py](/Users/csuftitan/Desktop/github-kb/app/services/github.py).
-
-### 3. AST / Tag Extraction
-
-After files are downloaded, the backend runs Aider RepoMap on each file.
-
-RepoMap extracts tags like:
-
-- definition names
-- reference names
-- line numbers
-- relative file paths
-
-This logic is in [app/services/repomap.py](/Users/csuftitan/Desktop/github-kb/app/services/repomap.py).
-
-### 4. Graph Build
-
-The app converts extracted tags into:
-
-- file nodes
-- symbol nodes
-- `contains` links
-- `calls` links
-
-The graph builder also:
-
-- deduplicates nodes and links
-- tries to attribute references to the containing definition
-- creates file-to-file overview call edges
-- calculates basic node weights
-
-This logic is in [app/services/graph_builder.py](/Users/csuftitan/Desktop/github-kb/app/services/graph_builder.py).
-
-### 5. Cache
-
-Each analyzed repo is cached in memory using a key like:
+### Architecture
 
 ```text
-owner/repo:commit_sha
+Browser / React UI        FastAPI API               GitHub API
+-------------------       --------------------      ------------------------
+Open repo route      ->   Parse owner/repo     ->   Fetch latest commit SHA
+Load graph page      ->   Check cache          ->   Fetch repository tree
+Render graph         <-   Build graph JSON     <-   Download source files
+                          Extract RepoMap tags
+                          Return nodes + links
 ```
 
-That means if the commit SHA has not changed, the graph can be served from cache.
+### Graph Model
 
-This logic is in [app/core/cache.py](/Users/csuftitan/Desktop/github-kb/app/core/cache.py).
-
-### 6. Frontend Rendering
-
-The frontend page:
-
-- loads graph JSON from the backend
-- draws a D3 force graph
-- keeps files visible by default
-- expands child symbols when a file is clicked
-- colors nodes by extension family
-- shows a details panel for the selected node
-
-This UI is in [app/static/index.html](/Users/csuftitan/Desktop/github-kb/app/static/index.html).
-
-## Routes
-
-### Browser Routes
-
-- `GET /`
-  - loads the graph UI
-- `GET /{owner}/{repo}`
-  - loads the graph UI for that GitHub repo path
-
-### API Routes
-
-- `GET /health`
-  - health check
-- `POST /analyze-repo`
-  - accepts JSON body like `{ "owner": "tiangolo", "repo": "fastapi" }`
-- `GET /graph/{owner}/{repo}`
-  - returns graph JSON
-- `GET /api/graph/{owner}/{repo}`
-  - returns graph JSON for the frontend
-
-## Example Graph Response
+The API returns graph data shaped like this:
 
 ```json
 {
@@ -186,125 +135,205 @@ This UI is in [app/static/index.html](/Users/csuftitan/Desktop/github-kb/app/sta
       "label": "main.py",
       "type": "file",
       "weight": 1.0
+    },
+    {
+      "id": "fastapi/main.py::FastAPI",
+      "label": "FastAPI",
+      "type": "class",
+      "file": "fastapi/main.py",
+      "line": 14,
+      "weight": 0.87
     }
   ],
   "links": [
     {
       "source": "fastapi/main.py",
-      "target": "fastapi/main.py::main",
+      "target": "fastapi/main.py::FastAPI",
       "type": "contains"
     }
   ]
 }
 ```
 
-## Supported File Types
+---
 
-The backend currently filters these extensions:
+## Features
+
+| Feature | Details |
+|---------|---------|
+| **GitHub repo analysis** | Analyze public repositories by owner and repo name |
+| **AST-backed symbol extraction** | Uses Aider RepoMap with Tree-sitter to collect structural tags |
+| **Interactive graph UI** | Visualize files and symbols in a browser with React and D3 |
+| **Call relationship mapping** | Resolve references to definitions and emit `calls` edges |
+| **File ownership graph** | Emit `contains` edges from files to symbol nodes |
+| **In-memory caching** | Cache graph results by `owner/repo:sha` |
+| **Discover endpoints** | Additional endpoints for index, chunks, and file-oriented payloads |
+| **Supported language filtering** | Downloads only supported source files to keep analysis bounded |
+
+---
+
+## Tech Stack
+
+| Layer | Tech |
+|------|------|
+| Backend | FastAPI, Uvicorn |
+| HTTP client | httpx |
+| Parsing | aider-chat RepoMap, Tree-sitter |
+| Config | Pydantic, pydantic-settings |
+| Cache | In-memory cache |
+| Frontend | React, Vite, D3, Tailwind CSS, Framer Motion |
+| Testing | Pytest |
+
+---
+
+## API
+
+<details>
+<summary><strong>REST endpoints</strong></summary>
+<br>
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| GET | `/health` | Health check |
+| GET | `/` | Static graph shell |
+| POST | `/analyze-repo` | Analyze repository from JSON body |
+| GET | `/graph/{owner}/{repo}` | Return graph payload |
+| GET | `/api/graph/{owner}/{repo}` | Return graph payload for clients |
+| GET | `/api/discover/{owner}/{repo}/index` | Return discover index |
+| GET | `/api/discover/{owner}/{repo}/chunk/{chunk_id}` | Return discover chunk |
+| GET | `/api/discover/{owner}/{repo}/file?path=...` | Return discover file payload |
+| GET | `/{owner}/{repo}` | Static graph route |
+
+</details>
+
+<details>
+<summary><strong>Node types</strong></summary>
+<br>
+
+| Type | Meaning |
+|------|---------|
+| `file` | Source file node |
+| `class` | Class definition |
+| `def` | Function or method definition |
+| `ref` | Symbol reference or call site |
+
+</details>
+
+<details>
+<summary><strong>Link types</strong></summary>
+<br>
+
+| Type | Meaning |
+|------|---------|
+| `contains` | File owns a symbol |
+| `calls` | Symbol references another symbol |
+
+</details>
+
+---
+
+## Supported File Extensions
 
 ```text
 .py .js .ts .tsx .jsx .java .go .rs .rb .cpp .c .h .cs .php .swift .kt
 ```
 
-The frontend currently has distinct color families for:
+---
 
-- `.py`
-- `.js`
-- `.ts`
-- `.jsx` / `.tsx`
-- all others as fallback
+## Project Structure
 
-## Setup
-
-### 1. Create and activate a virtual environment
-
-```bash
-python3.12 -m venv .venv
-source .venv/bin/activate
+```text
+github-kb/
+├── app/
+│   ├── api/
+│   │   └── routes.py
+│   ├── core/
+│   │   └── cache.py
+│   ├── services/
+│   │   ├── discovermap_adapter.py
+│   │   ├── file_language.py
+│   │   ├── github.py
+│   │   ├── graph_builder.py
+│   │   ├── repomap.py
+│   │   └── semantic_normalizer.py
+│   ├── static/
+│   │   └── index.html
+│   ├── config.py
+│   └── main.py
+├── frontend/
+│   ├── src/
+│   ├── package.json
+│   └── vite.config.js
+├── tests/
+├── requirements.txt
+└── README.md
 ```
 
-If `python3.12` is not installed on your machine, install it first. Python 3.12 is recommended for this project because some dependencies do not work reliably with Python 3.14.
+---
 
-### 2. Install dependencies
+## Configuration
 
-```bash
-python -m pip install --upgrade pip setuptools wheel
-python -m pip install -r requirements.txt
-```
-
-### 3. Create your environment file
+Copy the example environment file:
 
 ```bash
 cp .env.example .env
 ```
 
-Then edit `.env` and add your GitHub token:
+Set the required values:
 
 ```env
-GITHUB_TOKEN=ghp_your_token_here
+GITHUB_TOKEN=ghp_your_github_token_here
 MAX_FILES=300
 CACHE_TTL=3600
 LOG_LEVEL=INFO
+CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,https://git-map.com,https://www.git-map.com
 ```
 
-## How To Get a GitHub Token
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `GITHUB_TOKEN` | Yes | - | GitHub token used for API requests |
+| `MAX_FILES` | No | `300` | Maximum files downloaded per repository |
+| `CACHE_TTL` | No | `3600` | Cache lifetime in seconds |
+| `LOG_LEVEL` | No | `INFO` | Backend logging level |
+| `CORS_ORIGINS` | No | preset list | Allowed frontend origins |
 
-1. Sign in to GitHub.
-2. Open `Settings`.
-3. Go to `Developer settings`.
-4. Open `Personal access tokens`.
-5. Create a token.
+---
 
-Recommended:
+## Usage
 
-- use a fine-grained token
-- give it read-only access to repository contents
-- include any private repos you want to analyze
-
-For public repos, a token is still useful because it gives higher API rate limits.
-
-## Run The App
-
-Start the server with:
+<details>
+<summary><strong>Backend</strong></summary>
+<br>
 
 ```bash
-source .venv/bin/activate
-python -m uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --reload --port 8000
 ```
 
-Then open:
+</details>
 
-```text
-http://localhost:8000/
-```
-
-or directly open a repo:
-
-```text
-http://localhost:8000/Aryan1718/mini-redis
-```
-
-## Test The App
-
-Run tests:
+<details>
+<summary><strong>Frontend</strong></summary>
+<br>
 
 ```bash
-pytest -q
+cd frontend
+npm install
+npm run dev
 ```
 
-Health check:
+</details>
+
+<details>
+<summary><strong>Sample requests</strong></summary>
+<br>
 
 ```bash
 curl http://localhost:8000/health
 ```
 
-API request:
-
 ```bash
 curl http://localhost:8000/api/graph/tiangolo/fastapi
 ```
-
-POST request:
 
 ```bash
 curl -X POST http://localhost:8000/analyze-repo \
@@ -312,27 +341,62 @@ curl -X POST http://localhost:8000/analyze-repo \
   -d '{"owner":"tiangolo","repo":"fastapi"}'
 ```
 
-## Important Notes
+</details>
 
-- The graph is only as good as the extracted RepoMap tags. Some relationships are inferred, not guaranteed exact.
-- Very large repositories are capped by `MAX_FILES`.
-- The cache is in memory only. Restarting the app clears it.
-- The current frontend is a single static page, not a React app.
-- The embedded `discovermap/` folder is being used here as a reference implementation for graph presentation ideas.
+---
 
-## Current Limitations
+## Development
 
-- Function call resolution is approximate because Aider RepoMap tags do not provide full ownership/context for every reference.
-- There is no persistent cache like Redis yet.
-- There is no authentication UI or repo history view.
-- The graph may still need further tuning for very large repos.
+```bash
+pytest
+```
 
-## Future Improvements
+Useful entry points:
 
-- stronger cross-file call resolution
-- better clustering and grouping
-- persistent Redis cache
-- richer side panel with code snippets
-- search by full symbol path
-- more DiscoverMap-style graph behavior and animation
+- [app/main.py](/Users/csuftitan/Desktop/github-kb/app/main.py)
+- [app/api/routes.py](/Users/csuftitan/Desktop/github-kb/app/api/routes.py)
+- [app/services/github.py](/Users/csuftitan/Desktop/github-kb/app/services/github.py)
+- [app/services/repomap.py](/Users/csuftitan/Desktop/github-kb/app/services/repomap.py)
+- [app/services/graph_builder.py](/Users/csuftitan/Desktop/github-kb/app/services/graph_builder.py)
+- [frontend/src/App.jsx](/Users/csuftitan/Desktop/github-kb/frontend/src/App.jsx)
+- [frontend/src/pages/Graph.jsx](/Users/csuftitan/Desktop/github-kb/frontend/src/pages/Graph.jsx)
 
+---
+
+## Roadmap
+
+- Add Redis-backed caching without changing service interfaces
+- Improve symbol resolution and graph quality across larger repositories
+- Expand graph interactions, search, and filtering in the UI
+- Add production deployment instructions
+- Add screenshots, demo assets, and benchmark examples
+
+---
+
+## Contributing
+
+```bash
+git clone <your-repo-url>
+cd github-kb
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+pytest
+```
+
+Open a pull request with a clear description of the change and any relevant screenshots or API examples.
+
+---
+
+## License
+
+No license file is included yet.
+
+Add your preferred open-source license, such as MIT or Apache-2.0, and update the badge at the top of this README.
+
+<p align="center">
+<br>
+<a href="https://git-map.com">git-map.com</a><br><br>
+<code>uvicorn app.main:app --reload --port 8000</code><br>
+<sub>GitHub repository structure, mapped visually.</sub>
+</p>
