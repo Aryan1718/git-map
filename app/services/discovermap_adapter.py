@@ -8,7 +8,7 @@ from app.services.file_language import detect_file_language, language_color
 
 OVERVIEW_ALL_FILES_THRESHOLD = 199
 LARGE_REPO_FILE_THRESHOLD = 200
-MAX_OVERVIEW_FILES = 44
+MAX_OVERVIEW_FILES = 300
 MAX_OVERVIEW_IMPORTS = 96
 MAX_FILE_CHILDREN = 36
 MAX_FILE_IMPORTS = 14
@@ -207,6 +207,9 @@ def build_discovermap_payload(graph_payload: dict) -> dict:
                 "mode": overview_mode,
                 "large_repo": large_repo,
                 "file_paths": overview_paths,
+                "file_count": len(overview_paths),
+                "total_file_count": len(file_summaries),
+                "hidden_file_count": max(len(file_summaries) - len(overview_paths), 0),
                 "imports": overview_imports,
                 "caps": {
                     "max_overview_files": MAX_OVERVIEW_FILES,

@@ -3,7 +3,7 @@ import LayoutTextFlip from "./LayoutTextFlip";
 
 function Hero() {
   return (
-    <section className="relative flex min-h-[calc(100vh-88px)] items-start px-6 pb-20 pt-20 md:px-10 md:pb-28 md:pt-28">
+    <section className="relative flex min-h-[calc(100vh-88px)] items-center px-6 py-20 md:px-10 md:py-28">
       <div className="mx-auto flex w-full max-w-6xl justify-center">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
@@ -30,11 +30,22 @@ function Hero() {
           </h1>
 
           <div className="mt-12">
-            <LayoutTextFlip
-              text="https://"
-              words={["github.com", "git-map.com"]}
-              suffix="/facebook/react"
-            />
+            <div className="flex flex-col items-center justify-center gap-4 md:flex-row">
+              <LayoutTextFlip
+                text="https://"
+                words={["github.com", "git-map.com"]}
+                suffix="/facebook/react"
+              />
+              <a
+                href="/facebook/react"
+                aria-label="Open facebook/react graph"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/8 bg-white/[0.03] text-slate-400 transition hover:border-white/15 hover:bg-white/[0.06] hover:text-slate-200"
+              >
+                <span aria-hidden="true" className="text-xs">
+                  ↗
+                </span>
+              </a>
+            </div>
           </div>
         </motion.div>
       </div>
