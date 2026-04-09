@@ -6,7 +6,6 @@
 
 <p align="center">
   <a href="https://git-map.com"><img src="https://img.shields.io/badge/website-git--map.com-blue?style=flat-square" alt="Website"></a>
-  <a href="https://github.com/csuftitan/github-kb/stargazers"><img src="https://img.shields.io/github/stars/csuftitan/github-kb?style=flat-square" alt="Stars"></a>
   <a href="#"><img src="https://img.shields.io/badge/backend-FastAPI-009688?style=flat-square" alt="FastAPI"></a>
   <a href="#"><img src="https://img.shields.io/badge/frontend-React%20%2B%20D3-222222?style=flat-square" alt="React and D3"></a>
   <a href="#"><img src="https://img.shields.io/badge/parser-Aider%20RepoMap-orange?style=flat-square" alt="Aider RepoMap"></a>
@@ -19,21 +18,15 @@
 
 GIT-MAP analyzes a GitHub repository with the GitHub API, extracts structural symbols with Aider RepoMap and Tree-sitter, and returns a graph that can be explored visually in the browser. Instead of scanning raw files manually, you get a map of files, definitions, and cross-file relationships.
 
-<p align="center">
-  <img src="docs/preview.png" alt="GIT-MAP preview" width="85%" />
-</p>
-
 ---
 
-## Demo Video
 
-Drop your demo GIF into `docs/git-map.gif`.
 
 <p align="center">
   <img src="docs/git-map.gif" alt="GIT-MAP demo" width="85%" />
 </p>
 
-If you want, you can also wrap that GIF in a link to a full video later.
+
 
 Example:
 
