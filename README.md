@@ -21,15 +21,9 @@
   <code>https://git-map.com/twbs/bootstrap</code>
 </p>
 
-<p align="center">
-  <a href="https://git-map.com"><img src="https://img.shields.io/badge/website-git--map.com-blue?style=flat-square" alt="Website"></a>
-  <a href="#"><img src="https://img.shields.io/badge/backend-FastAPI-009688?style=flat-square" alt="FastAPI"></a>
-  <a href="#"><img src="https://img.shields.io/badge/frontend-React%20%2B%20D3-222222?style=flat-square" alt="React and D3"></a>
-  <a href="#"><img src="https://img.shields.io/badge/parser-Aider%20RepoMap-orange?style=flat-square" alt="Aider RepoMap"></a>
-  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10%2B-blue.svg?style=flat-square" alt="Python 3.10+"></a>
-  <a href="#"><img src="https://img.shields.io/badge/status-active-success?style=flat-square" alt="Status"></a>
-  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square" alt="MIT License"></a>
-</p>
+
+
+Example:
 
 <p align="center">
   <img src="docs/git-map.gif" alt="GIT-MAP demo" width="88%" />
