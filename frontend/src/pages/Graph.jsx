@@ -48,6 +48,25 @@ function Graph() {
   }, [owner, repo]);
 
   useEffect(() => {
+    if (!graphUrl || typeof window === "undefined") {
+      return undefined;
+    }
+
+    const expectedOrigin = new URL(graphUrl, window.location.origin).origin;
+
+    function handleMessage(event) {
+      if (event.origin !== expectedOrigin) return;
+      if (!event.data || typeof event.data !== "object") return;
+      if (event.data.type !== "git-map:graph-ready") return;
+      if (event.data.owner !== owner || event.data.repo !== repo) return;
+      setFrameLoaded(true);
+    }
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [graphUrl, owner, repo]);
+
+  useEffect(() => {
     if (frameLoaded || !loaderRef.current) {
       return undefined;
     }
@@ -124,7 +143,6 @@ function Graph() {
           <iframe
             title={`Graph for ${owner}/${repo}`}
             src={graphUrl}
-            onLoad={() => setFrameLoaded(true)}
             className="block h-screen w-full border-0 bg-[#070910]"
           />
         </div>

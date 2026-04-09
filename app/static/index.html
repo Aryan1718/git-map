@@ -1609,6 +1609,18 @@ function clearAnalysisTimers() {
   }
 }
 
+function notifyParent(type) {
+  if (window.parent === window || !state.repo) return
+  window.parent.postMessage(
+    {
+      type,
+      owner: state.repo.owner,
+      repo: state.repo.repo,
+    },
+    '*'
+  )
+}
+
 function renderAnalysisOverlay() {
   const overlay = document.getElementById('analysis-overlay')
   if (!overlay) return
@@ -1644,6 +1656,7 @@ function startAnalysis(owner, repo) {
   state.analysis.error = ''
   state.analysis.startedAt = Date.now()
   renderAnalysisOverlay()
+  notifyParent('git-map:graph-loading')
 
   // The backend currently responds with final payloads rather than streaming granular
   // progress, so intermediate stages advance on elapsed time until real milestones land.
@@ -1666,6 +1679,7 @@ function finishAnalysis(requestId) {
   state.analysis.note = ANALYSIS_STAGES[analysisStageIndex('ready')].description
   state.analysis.mode = 'ready'
   renderAnalysisOverlay()
+  notifyParent('git-map:graph-ready')
   markGraphReadyHandoff()
   state.analysis.handoffTimer = window.setTimeout(() => {
     if (requestId !== state.analysis.requestId) return
@@ -1684,6 +1698,7 @@ function failAnalysis(requestId, message) {
   state.analysis.note = 'The repository could not be initialized for this view.'
   state.analysis.progress = 100
   renderAnalysisOverlay()
+  notifyParent('git-map:graph-ready')
 }
 
 function currentRepoFromPath() {
