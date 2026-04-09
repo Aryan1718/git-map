@@ -1,12 +1,18 @@
 <h1 align="center">GIT-MAP</h1>
 
+<hr>
+
+<p align="center">
+  <strong>Turn any public GitHub repository into an interactive knowledge graph.</strong>
+</p>
+
 <p align="center">
   <strong>Swap <code>github.com</code> for <code>git-map.com</code> and turn any public repo into a living code graph.</strong>
 </p>
 
 <p align="center">
-  GIT-MAP pulls a repository through the GitHub API, extracts structure with RepoMap + Tree-sitter,
-  and renders the result as an interactive graph in the browser.
+  <strong>GIT-MAP</strong> pulls a repository through the GitHub API, extracts structure with <strong>RepoMap + Tree-sitter</strong>,
+  and renders the result as an <strong>interactive graph</strong> in the browser.
 </p>
 
 <p align="center">
@@ -16,11 +22,13 @@
 </p>
 
 <p align="center">
-  <a href="https://git-map.com"><img src="https://img.shields.io/badge/live-git--map.com-0f172a?style=flat-square" alt="Live site"></a>
+  <a href="https://git-map.com"><img src="https://img.shields.io/badge/website-git--map.com-blue?style=flat-square" alt="Website"></a>
   <a href="#"><img src="https://img.shields.io/badge/backend-FastAPI-009688?style=flat-square" alt="FastAPI"></a>
-  <a href="#"><img src="https://img.shields.io/badge/frontend-React%20%2B%20D3-111827?style=flat-square" alt="React and D3"></a>
-  <a href="#"><img src="https://img.shields.io/badge/parser-RepoMap%20%2B%20Tree--sitter-f59e0b?style=flat-square" alt="RepoMap and Tree-sitter"></a>
-  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10%2B-2563eb?style=flat-square" alt="Python 3.10+"></a>
+  <a href="#"><img src="https://img.shields.io/badge/frontend-React%20%2B%20D3-222222?style=flat-square" alt="React and D3"></a>
+  <a href="#"><img src="https://img.shields.io/badge/parser-Aider%20RepoMap-orange?style=flat-square" alt="Aider RepoMap"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10%2B-blue.svg?style=flat-square" alt="Python 3.10+"></a>
+  <a href="#"><img src="https://img.shields.io/badge/status-active-success?style=flat-square" alt="Status"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square" alt="MIT License"></a>
 </p>
 
 <p align="center">
@@ -309,6 +317,4 @@ Useful entry points:
 
 ## License
 
-No license file is included yet.
-
-Add your preferred license and update the badge when you are ready to publish this more formally.
+Released under the MIT License. See `LICENSE`.
