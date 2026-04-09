@@ -20,7 +20,12 @@
     --text-muted: rgba(171, 189, 220, 0.52);
     --shadow-lg: 0 24px 80px rgba(0, 0, 0, 0.45);
     --shadow-md: 0 18px 50px rgba(0, 0, 0, 0.34);
+    --shadow-shell: 0 24px 70px rgba(0, 0, 0, 0.28);
     --glass-blur: 22px;
+    --shell-radius-lg: 26px;
+    --shell-radius-md: 20px;
+    --shell-radius-sm: 14px;
+    --shell-line: rgba(255, 255, 255, 0.045);
     --file-fill: #1f2246;
     --file-stroke: #8a84f7;
     --file-text: #d9d6ff;
@@ -135,12 +140,13 @@
 
   .glass-card {
     position: relative;
-    background: linear-gradient(180deg, rgba(16, 24, 39, 0.8) 0%, rgba(9, 15, 27, 0.56) 100%);
-    border: 1px solid var(--border);
-    border-radius: 22px;
+    background:
+      linear-gradient(180deg, rgba(16, 24, 39, 0.7) 0%, rgba(8, 14, 26, 0.5) 100%);
+    border: 1px solid rgba(145, 170, 212, 0.13);
+    border-radius: var(--shell-radius-lg);
     backdrop-filter: blur(var(--glass-blur)) saturate(130%);
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(130%);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-shell);
   }
 
   .glass-card::before {
@@ -148,16 +154,87 @@
     position: absolute;
     inset: 1px;
     border-radius: inherit;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 28%);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent 24%),
+      radial-gradient(circle at top, rgba(138, 152, 255, 0.07), transparent 40%);
     pointer-events: none;
   }
 
-  #topbar {
-    display: grid;
-    grid-template-columns: auto minmax(320px, 1fr) auto;
+  .shell-section-label {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(177, 198, 237, 0.58);
+  }
+
+  .shell-chip {
+    display: inline-flex;
     align-items: center;
-    gap: 14px;
-    padding: 10px 14px;
+    gap: 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(145, 170, 212, 0.11);
+    background: rgba(255, 255, 255, 0.035);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    transition:
+      transform 160ms ease,
+      border-color 160ms ease,
+      background 160ms ease,
+      box-shadow 180ms ease,
+      opacity 160ms ease;
+  }
+
+  .shell-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(145, 170, 212, 0.14);
+    background:
+      linear-gradient(180deg, rgba(10, 15, 27, 0.8), rgba(7, 11, 20, 0.72));
+    color: var(--text-soft);
+    font: inherit;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+    transition:
+      transform 180ms ease,
+      border-color 180ms ease,
+      background 180ms ease,
+      opacity 200ms ease,
+      box-shadow 200ms ease,
+      color 180ms ease;
+  }
+
+  .shell-toggle:hover {
+    transform: translateY(-1px);
+    border-color: rgba(157, 189, 244, 0.24);
+    background:
+      linear-gradient(180deg, rgba(12, 18, 31, 0.88), rgba(8, 13, 23, 0.8));
+  }
+
+  .shell-toggle[aria-pressed="true"] {
+    color: rgba(230, 238, 255, 0.96);
+    border-color: rgba(140, 171, 244, 0.26);
+    box-shadow:
+      0 18px 44px rgba(0, 0, 0, 0.28),
+      0 0 0 1px rgba(115, 145, 237, 0.08);
+  }
+
+  .shell-toggle .toggle-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(126, 154, 255, 1), rgba(59, 219, 208, 1));
+    box-shadow: 0 0 10px rgba(95, 141, 255, 0.4);
+  }
+
+  #topbar {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
     min-height: 62px;
     transition: transform 320ms cubic-bezier(.22, 1, .36, 1), opacity 320ms ease, border-color 180ms ease;
   }
@@ -166,42 +243,15 @@
     border-color: var(--border-strong);
   }
 
-  #brand {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-  }
-
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: rgba(168, 193, 244, 0.7);
-  }
-
-  .eyebrow::before {
-    content: '';
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, rgba(121, 151, 255, 0.92), rgba(77, 223, 210, 0.92));
-    box-shadow: 0 0 14px rgba(95, 141, 255, 0.5);
-  }
-
-  #brand h1 {
-    font-size: clamp(18px, 2vw, 22px);
-    line-height: 1;
-    letter-spacing: -0.04em;
-    font-weight: 600;
+  body.analysis-active #topbar {
+    transform: translateY(2px);
+    opacity: 0.92;
   }
 
   #control-stack {
     display: flex;
     min-width: 0;
+    width: 100%;
   }
   #search-wrap {
     display: flex;
@@ -209,12 +259,20 @@
     gap: 12px;
     min-width: 0;
     width: 100%;
-    padding: 10px 14px;
-    border-radius: 16px;
-    background: linear-gradient(180deg, rgba(6, 10, 18, 0.74), rgba(12, 17, 30, 0.58));
-    border: 1px solid rgba(145, 170, 212, 0.12);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    padding: 11px 14px;
+    border-radius: 18px;
+    background:
+      linear-gradient(180deg, rgba(6, 10, 18, 0.76), rgba(11, 17, 30, 0.54));
+    border: 1px solid rgba(145, 170, 212, 0.1);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.045),
+      inset 0 -18px 40px rgba(0, 0, 0, 0.08);
     transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+
+  #search-wrap:hover {
+    border-color: rgba(145, 170, 212, 0.16);
+    transform: translateY(-1px);
   }
 
   #search-wrap:focus-within {
@@ -222,6 +280,7 @@
     background: linear-gradient(180deg, rgba(8, 13, 23, 0.88), rgba(14, 20, 34, 0.72));
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      inset 0 -18px 40px rgba(0, 0, 0, 0.1),
       0 0 0 1px rgba(120, 149, 255, 0.12),
       0 14px 40px rgba(65, 94, 186, 0.2);
     transform: translateY(-1px);
@@ -264,48 +323,15 @@
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    transition: border-color 160ms ease, background 160ms ease, color 160ms ease, transform 160ms ease;
   }
 
-  .topbar-meta {
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-end;
-    min-width: 0;
-  }
-
-  .repo-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    max-width: 240px;
-    min-width: 0;
-    padding: 7px 10px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(145, 170, 212, 0.12);
-    color: var(--text-soft);
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-
-  .repo-chip::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, rgba(122, 154, 255, 1), rgba(59, 219, 208, 1));
-    box-shadow: 0 0 10px rgba(95, 141, 255, 0.4);
-    flex: 0 0 auto;
-  }
-
-  .repo-chip__value {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: var(--text);
+  #search-wrap:hover .search-kbd,
+  #search-wrap:focus-within .search-kbd {
+    color: rgba(219, 231, 255, 0.84);
+    border-color: rgba(145, 170, 212, 0.18);
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-1px);
   }
 
   #canvas-wrap {
@@ -313,12 +339,29 @@
     flex: 1;
     min-height: 0;
     overflow: hidden;
-    border-radius: 24px;
-    border: 1px solid rgba(145, 170, 212, 0.08);
+    border-radius: 28px;
+    border: 1px solid rgba(145, 170, 212, 0.07);
     background:
-      radial-gradient(circle at 50% 46%, rgba(88, 114, 232, 0.1), transparent 30%),
-      linear-gradient(180deg, rgba(6, 9, 17, 0.52), rgba(3, 6, 12, 0.2));
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      radial-gradient(circle at 50% 46%, rgba(88, 114, 232, 0.09), transparent 30%),
+      linear-gradient(180deg, rgba(6, 9, 17, 0.46), rgba(3, 6, 12, 0.16));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.03),
+      inset 0 -50px 80px rgba(0, 0, 0, 0.1);
+    transition:
+      border-color 220ms ease,
+      box-shadow 260ms ease,
+      background 260ms ease,
+      transform 260ms cubic-bezier(.22, 1, .36, 1);
+  }
+
+  #canvas-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    pointer-events: none;
+    z-index: 1;
   }
 
   #graph {
@@ -327,6 +370,25 @@
     display: block;
     position: relative;
     z-index: 2;
+    transition: opacity 260ms ease, filter 260ms ease;
+  }
+
+  body.analysis-active #graph {
+    opacity: 0.34;
+    filter: blur(1.2px);
+  }
+
+  body.graph-ready #canvas-wrap {
+    border-color: rgba(145, 170, 212, 0.12);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.03),
+      inset 0 -50px 80px rgba(0, 0, 0, 0.1),
+      0 24px 68px rgba(17, 28, 61, 0.12);
+  }
+
+  body.graph-ready #graph {
+    opacity: 1;
+    filter: none;
   }
 
   .graph-glow,
@@ -350,6 +412,305 @@
       radial-gradient(circle at 50% 52%, transparent 54%, rgba(2, 5, 10, 0.36) 100%);
   }
 
+  #analysis-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background:
+      radial-gradient(circle at 50% 24%, rgba(106, 128, 255, 0.12), transparent 30%),
+      rgba(4, 8, 14, 0.38);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 240ms ease, visibility 0ms linear 240ms;
+  }
+
+  #analysis-overlay.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 240ms ease, visibility 0ms linear 0ms;
+  }
+
+  .analysis-card {
+    width: min(540px, 100%);
+    padding: 22px 22px 20px;
+    border-radius: 28px;
+    border: 1px solid rgba(145, 170, 212, 0.12);
+    background:
+      linear-gradient(180deg, rgba(12, 18, 31, 0.94), rgba(5, 9, 16, 0.9));
+    box-shadow:
+      0 36px 120px rgba(0, 0, 0, 0.42),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+    transition:
+      opacity 240ms ease,
+      transform 260ms cubic-bezier(.22, 1, .36, 1),
+      box-shadow 220ms ease,
+      border-color 180ms ease;
+  }
+
+  #analysis-overlay.is-visible .analysis-card {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  #analysis-overlay.is-ready .analysis-card {
+    transform: translateY(-4px) scale(0.992);
+    box-shadow:
+      0 30px 90px rgba(0, 0, 0, 0.34),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  #analysis-overlay.is-error .analysis-card {
+    border-color: rgba(244, 143, 177, 0.16);
+  }
+
+  .analysis-topbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .analysis-kicker {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(177, 198, 237, 0.62);
+  }
+
+  .analysis-title {
+    margin-top: 10px;
+    font-size: clamp(24px, 3vw, 30px);
+    line-height: 1.04;
+    letter-spacing: -0.05em;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .analysis-copy {
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-soft);
+  }
+
+  .analysis-badge {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 68px;
+    padding: 10px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(65, 224, 200, 0.16);
+    background: rgba(65, 224, 200, 0.08);
+    color: #bdf8ef;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition:
+      transform 180ms ease,
+      background 180ms ease,
+      border-color 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  #analysis-overlay.is-ready .analysis-badge {
+    transform: scale(1.03);
+    box-shadow: 0 0 18px rgba(65, 224, 200, 0.16);
+  }
+
+  .analysis-progress {
+    margin-top: 18px;
+  }
+
+  .analysis-progress__track {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .analysis-progress__bar {
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, rgba(56, 183, 167, 0.96), rgba(106, 128, 255, 0.96));
+    box-shadow: 0 0 24px rgba(98, 119, 255, 0.35);
+    transition: width 320ms cubic-bezier(.22, 1, .36, 1);
+  }
+
+  .analysis-progress__meta {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .analysis-steps {
+    margin-top: 18px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .analysis-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 18px;
+    border: 1px solid rgba(145, 170, 212, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+    transform: translateY(0);
+    transition:
+      transform 200ms cubic-bezier(.22, 1, .36, 1),
+      border-color 180ms ease,
+      background 180ms ease,
+      opacity 180ms ease,
+      box-shadow 200ms ease;
+  }
+
+  .analysis-step.is-complete {
+    border-color: rgba(65, 224, 200, 0.16);
+    background: rgba(65, 224, 200, 0.05);
+  }
+
+  .analysis-step.is-current {
+    border-color: rgba(122, 154, 255, 0.22);
+    background: rgba(106, 128, 255, 0.08);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(39, 52, 101, 0.14);
+  }
+
+  .analysis-step.is-upcoming {
+    opacity: 0.62;
+  }
+
+  .analysis-step__dot {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid rgba(145, 170, 212, 0.14);
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(219, 232, 255, 0.76);
+    font-size: 11px;
+    transition:
+      transform 180ms ease,
+      border-color 180ms ease,
+      background 180ms ease,
+      color 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .analysis-step.is-complete .analysis-step__dot {
+    border-color: rgba(65, 224, 200, 0.22);
+    background: rgba(65, 224, 200, 0.12);
+    color: #bdf8ef;
+  }
+
+  .analysis-step.is-current .analysis-step__dot {
+    border-color: rgba(122, 154, 255, 0.3);
+    background: rgba(122, 154, 255, 0.14);
+    color: #d9e4ff;
+    transform: scale(1.04);
+  }
+
+  .analysis-step__body {
+    min-width: 0;
+  }
+
+  .analysis-step__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .analysis-step__pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(148, 167, 255, 0.95);
+    box-shadow: 0 0 12px rgba(122, 154, 255, 0.42);
+    animation: analysisPulse 1.4s ease-in-out infinite;
+  }
+
+  .analysis-step__copy {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--text-soft);
+  }
+
+  .analysis-footer {
+    margin-top: 18px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+
+  .analysis-actions {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .analysis-button {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 14px;
+    border-radius: 999px;
+    font: inherit;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(145, 170, 212, 0.12);
+    transition: transform 180ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+  }
+
+  .analysis-button:hover {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(145, 170, 212, 0.2);
+  }
+
+  .analysis-button--primary {
+    color: #dffef8;
+    background: rgba(65, 224, 200, 0.12);
+    border-color: rgba(65, 224, 200, 0.2);
+  }
+
+  .analysis-button--primary:hover {
+    background: rgba(65, 224, 200, 0.18);
+    border-color: rgba(65, 224, 200, 0.28);
+  }
+
+  @keyframes analysisPulse {
+    0%, 100% { opacity: 0.45; transform: scale(0.96); }
+    50% { opacity: 1; transform: scale(1.28); }
+  }
+
   .floating-card {
     position: absolute;
     z-index: 3;
@@ -362,33 +723,53 @@
 
   .floating-card:hover {
     border-color: var(--border-strong);
+    transform: translateY(-1px);
   }
 
   #graph-hint {
-    top: 58px;
-    left: 12px;
-    width: min(300px, calc(100% - 24px));
-    padding: 14px 14px 12px;
+    top: 60px;
+    left: 14px;
+    width: min(320px, calc(100% - 28px));
+    padding: 14px 14px 14px;
     opacity: 0;
     transform: translateY(-8px);
+    visibility: hidden;
     pointer-events: none;
   }
 
   body.help-open #graph-hint {
     opacity: 1;
     transform: translateY(0);
+    visibility: visible;
     pointer-events: auto;
+  }
+
+  #graph-hint > * {
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+      opacity 180ms ease,
+      transform 220ms cubic-bezier(.22, 1, .36, 1);
+  }
+
+  body.help-open #graph-hint > * {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  body.help-open #graph-hint > *:nth-child(2) {
+    transition-delay: 20ms;
+  }
+
+  body.help-open #graph-hint > *:nth-child(3) {
+    transition-delay: 40ms;
   }
 
   .hint-kicker {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 8px;
-    font-size: 10px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: rgba(177, 198, 237, 0.74);
+    margin-bottom: 10px;
   }
 
   .hint-kicker::before {
@@ -401,17 +782,18 @@
   }
 
   .hint-title {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
-    letter-spacing: -0.03em;
-    margin-bottom: 6px;
+    letter-spacing: -0.035em;
+    line-height: 1.3;
+    margin-bottom: 7px;
   }
 
   .hint-copy {
     color: var(--text-soft);
     font-size: 12px;
-    line-height: 1.55;
-    margin-bottom: 10px;
+    line-height: 1.6;
+    margin-bottom: 12px;
   }
 
   .hint-actions {
@@ -423,13 +805,26 @@
   .hint-chip {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    padding: 6px 8px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(145, 170, 212, 0.08);
-    color: rgba(212, 224, 247, 0.84);
+    gap: 8px;
+    padding: 7px 9px;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.028);
+    border: 1px solid rgba(145, 170, 212, 0.075);
+    color: rgba(212, 224, 247, 0.82);
     font-size: 11px;
+    line-height: 1.45;
+    transition:
+      transform 160ms ease,
+      border-color 160ms ease,
+      background 160ms ease,
+      color 160ms ease;
+  }
+
+  .hint-chip:hover {
+    transform: translateY(-1px);
+    border-color: rgba(145, 170, 212, 0.13);
+    background: rgba(255, 255, 255, 0.045);
+    color: rgba(230, 238, 255, 0.9);
   }
 
   #help-toggle {
@@ -437,36 +832,7 @@
     top: 12px;
     left: 12px;
     z-index: 4;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(145, 170, 212, 0.14);
-    background: rgba(8, 12, 21, 0.72);
-    color: var(--text-soft);
-    font: inherit;
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    cursor: pointer;
-    backdrop-filter: blur(16px);
-    box-shadow: var(--shadow-md);
-    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
-  }
-
-  #help-toggle:hover {
-    transform: translateY(-1px);
-    border-color: rgba(157, 189, 244, 0.22);
-    background: rgba(11, 16, 28, 0.84);
-  }
-
-  #help-toggle .toggle-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, rgba(126, 154, 255, 1), rgba(59, 219, 208, 1));
-    box-shadow: 0 0 10px rgba(95, 141, 255, 0.4);
+    padding: 8px 11px;
   }
 
   .hint-chip__dot {
@@ -482,44 +848,16 @@
     right: 14px;
     bottom: 14px;
     z-index: 4;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
     padding: 9px 12px;
-    border: 1px solid rgba(145, 170, 212, 0.14);
-    border-radius: 999px;
-    background: rgba(8, 12, 21, 0.74);
-    color: var(--text);
-    font: inherit;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    cursor: pointer;
-    backdrop-filter: blur(16px);
-    box-shadow: var(--shadow-md);
-    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, opacity 200ms ease;
-  }
-
-  #detail-toggle:hover {
-    transform: translateY(-1px);
-    border-color: rgba(157, 189, 244, 0.26);
-    background: rgba(11, 16, 28, 0.86);
-  }
-
-  #detail-toggle .toggle-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, rgba(126, 154, 255, 1), rgba(59, 219, 208, 1));
-    box-shadow: 0 0 14px rgba(95, 141, 255, 0.48);
+    letter-spacing: 0.1em;
   }
 
   #inspector-shell {
     position: absolute;
-    top: 12px;
-    right: 12px;
-    bottom: 56px;
-    width: min(360px, calc(100% - 24px));
+    top: 14px;
+    right: 14px;
+    bottom: 58px;
+    width: min(356px, calc(100% - 28px));
     z-index: 3;
     pointer-events: none;
   }
@@ -534,6 +872,14 @@
     overflow: hidden;
     transform: translateX(0);
     opacity: 1;
+    background:
+      linear-gradient(180deg, rgba(14, 21, 36, 0.76), rgba(8, 13, 23, 0.58));
+    transition:
+      transform 240ms cubic-bezier(.22, 1, .36, 1),
+      opacity 220ms ease,
+      border-color 180ms ease,
+      background 180ms ease,
+      box-shadow 220ms ease;
   }
 
   body.details-hidden #detail-panel {
@@ -547,43 +893,53 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 14px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(145, 170, 212, 0.08);
+    transition: opacity 180ms ease, transform 220ms cubic-bezier(.22, 1, .36, 1);
   }
 
   .inspector-kicker {
-    font-size: 10px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: rgba(180, 199, 238, 0.7);
-    margin-bottom: 8px;
+    margin-bottom: 9px;
   }
 
   .inspector-title {
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 600;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.045em;
   }
 
   .inspector-subtitle {
-    margin-top: 4px;
+    margin-top: 6px;
     color: var(--text-soft);
     font-size: 11px;
-    line-height: 1.45;
-    max-width: 24ch;
+    line-height: 1.55;
+    max-width: 26ch;
   }
 
   .inspector-badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 9px 12px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(145, 170, 212, 0.12);
+    padding: 8px 11px;
     color: var(--text-soft);
     font-size: 11px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
+  }
+
+  #inspector-mode {
+    transition: opacity 140ms ease, transform 180ms ease;
+  }
+
+  .inspector-badge__pulse {
+    transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+  }
+
+  body.details-hidden .inspector-header,
+  body.details-hidden .inspector-scroll {
+    opacity: 0;
+    transform: translateX(10px);
   }
 
   .inspector-badge__pulse {
@@ -599,6 +955,8 @@
     min-height: 0;
     overflow: auto;
     padding-right: 6px;
+    scrollbar-color: rgba(145, 170, 212, 0.18) transparent;
+    transition: opacity 180ms ease, transform 220ms cubic-bezier(.22, 1, .36, 1);
   }
 
   .inspector-scroll::-webkit-scrollbar {
@@ -613,28 +971,37 @@
   #detail-status,
   #detail-content {
     position: relative;
-    padding: 14px;
-    border-radius: 16px;
-    background: linear-gradient(180deg, rgba(15, 23, 38, 0.82), rgba(9, 15, 27, 0.62));
-    border: 1px solid rgba(145, 170, 212, 0.11);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    padding: 15px;
+    border-radius: 18px;
+    background:
+      linear-gradient(180deg, rgba(15, 23, 38, 0.72), rgba(9, 15, 27, 0.52));
+    border: 1px solid rgba(145, 170, 212, 0.09);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.03),
+      inset 0 -24px 40px rgba(0, 0, 0, 0.06);
+    transition:
+      opacity 180ms ease,
+      transform 220ms cubic-bezier(.22, 1, .36, 1),
+      border-color 180ms ease,
+      background 180ms ease,
+      box-shadow 180ms ease;
   }
 
   #detail-status {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
 
   .section-label {
-    font-size: 11px;
-    letter-spacing: 0.16em;
+    font-size: 10px;
+    letter-spacing: 0.17em;
     text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 10px;
+    color: rgba(177, 198, 237, 0.56);
+    margin-bottom: 12px;
   }
 
   .status-copy {
     font-size: 13px;
-    line-height: 1.7;
+    line-height: 1.72;
     color: var(--text-soft);
   }
 
@@ -651,9 +1018,6 @@
     align-items: center;
     gap: 7px;
     padding: 6px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(145, 170, 212, 0.12);
-    background: rgba(255, 255, 255, 0.03);
     color: rgba(214, 226, 246, 0.82);
     font-size: 11px;
     letter-spacing: 0.16em;
@@ -670,7 +1034,7 @@
   }
 
   .detail-name {
-    font-size: 24px;
+    font-size: 23px;
     line-height: 1.08;
     letter-spacing: -0.05em;
     font-weight: 600;
@@ -681,8 +1045,8 @@
   .detail-subtitle {
     font-size: 12px;
     color: var(--text-soft);
-    line-height: 1.7;
-    margin-bottom: 18px;
+    line-height: 1.72;
+    margin-bottom: 20px;
     word-break: break-word;
   }
 
@@ -694,10 +1058,24 @@
   }
 
   .detail-card {
-    padding: 12px 13px;
+    padding: 13px 14px;
     border-radius: 16px;
-    border: 1px solid rgba(145, 170, 212, 0.09);
-    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(145, 170, 212, 0.08);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.024), rgba(255, 255, 255, 0.016));
+    transition:
+      transform 160ms ease,
+      border-color 160ms ease,
+      background 160ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .detail-card:hover {
+    transform: translateY(-1px);
+    border-color: rgba(145, 170, 212, 0.12);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.02));
+    box-shadow: 0 14px 28px rgba(6, 10, 18, 0.12);
   }
 
   .detail-card .k {
@@ -716,14 +1094,14 @@
   }
 
   .detail-section + .detail-section {
-    margin-top: 16px;
+    margin-top: 18px;
   }
 
   .detail-section h3 {
-    font-size: 11px;
-    letter-spacing: 0.16em;
+    font-size: 10px;
+    letter-spacing: 0.17em;
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: rgba(177, 198, 237, 0.54);
     margin-bottom: 10px;
   }
 
@@ -735,12 +1113,29 @@
 
   .detail-chip {
     padding: 8px 10px;
-    border-radius: 12px;
-    border: 1px solid rgba(145, 170, 212, 0.1);
-    background: rgba(255, 255, 255, 0.03);
+    border-radius: 13px;
+    border: 1px solid rgba(145, 170, 212, 0.08);
+    background: rgba(255, 255, 255, 0.025);
     color: rgba(218, 228, 247, 0.84);
     font-size: 12px;
     line-height: 1.45;
+    transition:
+      transform 160ms ease,
+      border-color 160ms ease,
+      background 160ms ease,
+      color 160ms ease;
+  }
+
+  .detail-chip:hover {
+    transform: translateY(-1px);
+    border-color: rgba(145, 170, 212, 0.14);
+    background: rgba(255, 255, 255, 0.045);
+    color: rgba(233, 241, 255, 0.92);
+  }
+
+  .content-swap.is-swapping {
+    opacity: 0.02;
+    transform: translateY(6px);
   }
 
   .detail-empty {
@@ -752,7 +1147,7 @@
   .link {
     fill: none;
     stroke-linecap: round;
-    transition: opacity 180ms ease, stroke-width 180ms ease;
+    transition: opacity 180ms ease, stroke-width 180ms ease, stroke 180ms ease, stroke-dasharray 180ms ease;
   }
 
   .node {
@@ -863,11 +1258,6 @@
 
 <div class="app-shell">
   <header id="topbar" class="glass-card">
-    <div id="brand">
-      <div class="eyebrow">Graph Explorer</div>
-      <h1>git-map</h1>
-    </div>
-
     <div id="control-stack">
       <label id="search-wrap" for="search" aria-label="Search graph">
         <svg class="search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -877,26 +1267,21 @@
         <span class="search-kbd">Esc</span>
       </label>
     </div>
-
-    <div class="topbar-meta">
-      <div class="repo-chip" id="repo-chip" aria-live="polite">
-        <span class="repo-chip__value" id="repo-label">Open a repository path</span>
-      </div>
-    </div>
   </header>
 
   <main id="canvas-wrap">
     <div class="graph-glow" aria-hidden="true"></div>
     <div class="graph-vignette" aria-hidden="true"></div>
     <svg id="graph"></svg>
+    <div id="analysis-overlay" aria-live="polite" aria-hidden="true"></div>
 
-    <button id="help-toggle" type="button" aria-pressed="false">
+    <button id="help-toggle" class="shell-toggle" type="button" aria-pressed="false">
       <span class="toggle-dot"></span>
       <span id="help-toggle-label">Help</span>
     </button>
 
     <aside id="graph-hint" class="floating-card glass-card">
-      <div class="hint-kicker">Guide</div>
+      <div class="hint-kicker shell-section-label">Guide</div>
       <div class="hint-title">Start broad, then commit to a local neighborhood.</div>
       <div class="hint-copy">Hover previews nearby structure. Clicking a node commits focus so unrelated graph regions fade and the local chain reads first.</div>
       <div class="hint-actions">
@@ -910,20 +1295,20 @@
       <section id="detail-panel" class="glass-card" aria-live="polite">
         <div class="inspector-header">
           <div>
-            <div class="inspector-kicker">Contextual Inspector</div>
+            <div class="inspector-kicker shell-section-label">Contextual Inspector</div>
             <div class="inspector-title">Selection state</div>
             <div class="inspector-subtitle">Focused metadata, structural relationships, and local exploration cues stay anchored beside the graph.</div>
           </div>
-          <div class="inspector-badge"><span class="inspector-badge__pulse"></span><span id="inspector-mode">Overview</span></div>
+          <div class="inspector-badge shell-chip"><span class="inspector-badge__pulse"></span><span id="inspector-mode">Overview</span></div>
         </div>
         <div class="inspector-scroll">
-          <div id="detail-status"></div>
-          <div id="detail-content"></div>
+          <div id="detail-status" class="content-swap"></div>
+          <div id="detail-content" class="content-swap"></div>
         </div>
       </section>
     </div>
 
-    <button id="detail-toggle" type="button" aria-pressed="false">
+    <button id="detail-toggle" class="shell-toggle" type="button" aria-pressed="false">
       <span class="toggle-dot"></span>
       <span id="detail-toggle-label">Show Inspector</span>
     </button>
@@ -975,6 +1360,16 @@ const DEFAULT_STATUS = 'Overview mode keeps the graph broad. Select a file, rout
 const CHILD_RADIUS = 86
 const CONTEXT_CALL_CAP = 10
 const DENSE_LABEL_THRESHOLD = 48
+const ANALYSIS_STAGES = [
+  { id: 'validating', label: 'Validating repository', description: 'Checking the repository path and latest commit.', targetProgress: 10, startsAtMs: 0 },
+  { id: 'fetching', label: 'Fetching repository tree', description: 'Loading the repo structure and source inventory.', targetProgress: 24, startsAtMs: 650 },
+  { id: 'filtering', label: 'Filtering supported files', description: 'Selecting source files that can be mapped into the graph.', targetProgress: 38, startsAtMs: 1650 },
+  { id: 'parsing', label: 'Parsing symbols', description: 'Extracting files, routes, functions, and components from the analyzed repo.', targetProgress: 60, startsAtMs: 3300 },
+  { id: 'building', label: 'Building knowledge graph', description: 'Connecting code structure into graph nodes and edges.', targetProgress: 79, startsAtMs: 5600 },
+  { id: 'preparing', label: 'Preparing overview', description: 'Finalizing the overview slice and compatibility chunks.', targetProgress: 90, startsAtMs: 7900 },
+  { id: 'rendering', label: 'Rendering graph', description: 'Mounting the graph view and restoring interactions.', targetProgress: 97, startsAtMs: 0 },
+  { id: 'ready', label: 'Graph ready', description: 'The repository map is ready to explore.', targetProgress: 100, startsAtMs: 0 },
+]
 
 const state = {
   activeNodeId: null,
@@ -988,6 +1383,19 @@ const state = {
   loadedFiles: new Set(),
   repo: null,
   index: null,
+  analysis: {
+    visible: false,
+    currentStageId: 'validating',
+    progress: 4,
+    note: ANALYSIS_STAGES[0].description,
+    meta: '',
+    mode: 'idle',
+    error: '',
+    timer: null,
+    handoffTimer: null,
+    requestId: 0,
+    startedAt: 0,
+  },
 }
 
 const fullGraph = {
@@ -1011,7 +1419,10 @@ let currentTransform = d3.zoomIdentity
 let detailPanelVisible = false
 let helpPanelVisible = false
 let searchTimer = null
+let graphReadyTimer = null
 const fileDetailPromises = new Map()
+const panelSwapState = new WeakMap()
+const prefersReducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
 
 function overviewNotice() {
   const overview = state.index?.overview || {}
@@ -1047,6 +1458,224 @@ function linkEndpointId(endpoint) {
 
 function fileName(path) {
   return (path || '').split('/').pop() || path
+}
+
+function prefersReducedMotion() {
+  return prefersReducedMotionQuery.matches
+}
+
+function markGraphReadyHandoff() {
+  document.body.classList.add('graph-ready')
+  if (graphReadyTimer) window.clearTimeout(graphReadyTimer)
+  graphReadyTimer = window.setTimeout(() => {
+    document.body.classList.remove('graph-ready')
+  }, prefersReducedMotion() ? 40 : 720)
+}
+
+function swapNodeContent(node, html) {
+  if (!node) return
+  const previous = panelSwapState.get(node) || {}
+  if (previous.html === html) return
+  panelSwapState.set(node, { ...previous, html })
+
+  if (previous.timer) window.clearTimeout(previous.timer)
+  if (prefersReducedMotion() || !node.innerHTML.trim()) {
+    node.innerHTML = html
+    node.classList.remove('is-swapping')
+    panelSwapState.set(node, { html, timer: null })
+    return
+  }
+
+  node.classList.add('is-swapping')
+  const timer = window.setTimeout(() => {
+    node.innerHTML = html
+    node.classList.remove('is-swapping')
+    panelSwapState.set(node, { html, timer: null })
+  }, 110)
+  panelSwapState.set(node, { html, timer })
+}
+
+function setInspectorMode(text) {
+  const inspectorMode = document.getElementById('inspector-mode')
+  if (!inspectorMode || inspectorMode.textContent === text) return
+  if (prefersReducedMotion()) {
+    inspectorMode.textContent = text
+    return
+  }
+  inspectorMode.style.opacity = '0.5'
+  inspectorMode.style.transform = 'translateY(3px)'
+  window.setTimeout(() => {
+    inspectorMode.textContent = text
+    inspectorMode.style.opacity = '1'
+    inspectorMode.style.transform = 'translateY(0)'
+  }, 90)
+}
+
+function analysisStageIndex(stageId) {
+  return Math.max(0, ANALYSIS_STAGES.findIndex(stage => stage.id === stageId))
+}
+
+function analysisStepSequence() {
+  return ANALYSIS_STAGES.slice(0, 7)
+}
+
+function analysisStageForElapsed(elapsedMs) {
+  let current = ANALYSIS_STAGES[0]
+  for (const stage of ANALYSIS_STAGES.slice(0, 6)) {
+    if (elapsedMs >= stage.startsAtMs) {
+      current = stage
+    } else {
+      break
+    }
+  }
+  return current
+}
+
+function clearAnalysisTimers() {
+  if (state.analysis.timer) {
+    window.clearInterval(state.analysis.timer)
+    state.analysis.timer = null
+  }
+  if (state.analysis.handoffTimer) {
+    window.clearTimeout(state.analysis.handoffTimer)
+    state.analysis.handoffTimer = null
+  }
+}
+
+function renderAnalysisOverlay() {
+  const overlay = document.getElementById('analysis-overlay')
+  if (!overlay) return
+
+  const progress = Math.max(0, Math.min(100, Math.round(state.analysis.progress)))
+  const currentIndex = analysisStageIndex(state.analysis.currentStageId)
+  const isError = state.analysis.mode === 'error'
+  const isReady = state.analysis.mode === 'ready'
+  const title = isError ? 'Analysis interrupted' : isReady ? 'Graph ready' : 'Analyzing repository'
+  const copy = isError ? (state.analysis.error || 'The repository could not be analyzed.') : state.analysis.note
+  const meta = state.analysis.meta || (state.repo ? `${state.repo.owner}/${state.repo.repo}` : 'Waiting for repository path')
+
+  overlay.innerHTML = `
+    <div class="analysis-card">
+      <div class="analysis-topbar">
+        <div>
+          <div class="analysis-kicker">Repository analysis</div>
+          <div class="analysis-title">${escapeHtml(title)}</div>
+          <div class="analysis-copy">${escapeHtml(copy)}</div>
+        </div>
+        <div class="analysis-badge">${progress}%</div>
+      </div>
+      <div class="analysis-progress">
+        <div class="analysis-progress__track">
+          <div class="analysis-progress__bar" style="width:${progress}%"></div>
+        </div>
+        <div class="analysis-progress__meta">
+          <span>${escapeHtml(meta)}</span>
+          <span>${escapeHtml(isError ? 'Load failed' : state.analysis.mode === 'loading' ? 'Live analysis' : 'Ready')}</span>
+        </div>
+      </div>
+      <div class="analysis-steps">
+        ${analysisStepSequence().map((stage, index) => {
+          const isComplete = isReady || currentIndex > index
+          const isCurrent = !isError && state.analysis.currentStageId === stage.id
+          const stateClass = isCurrent ? 'is-current' : isComplete ? 'is-complete' : 'is-upcoming'
+          return `
+            <div class="analysis-step ${stateClass}">
+              <div class="analysis-step__dot">${isComplete ? '&#10003;' : index + 1}</div>
+              <div class="analysis-step__body">
+                <div class="analysis-step__title">
+                  <span>${escapeHtml(stage.label)}</span>
+                  ${isCurrent ? '<span class="analysis-step__pulse" aria-hidden="true"></span>' : ''}
+                </div>
+                <div class="analysis-step__copy">${escapeHtml(stage.description)}</div>
+              </div>
+            </div>
+          `
+        }).join('')}
+      </div>
+      ${isError ? `
+        <div class="analysis-actions">
+          <button type="button" class="analysis-button analysis-button--primary" data-analysis-action="retry">Retry analysis</button>
+          <button type="button" class="analysis-button" data-analysis-action="dismiss">Dismiss</button>
+        </div>
+      ` : `
+        <div class="analysis-footer">${escapeHtml(isReady ? 'The graph is loaded and interactions are active again.' : 'Stages follow the current loading lifecycle and tighten into real milestones as backend data arrives.')}</div>
+      `}
+    </div>
+  `
+
+  overlay.classList.toggle('is-visible', state.analysis.visible)
+  overlay.classList.toggle('is-ready', isReady)
+  overlay.classList.toggle('is-error', isError)
+  overlay.setAttribute('aria-hidden', state.analysis.visible ? 'false' : 'true')
+  document.body.classList.toggle('analysis-active', state.analysis.visible)
+}
+
+function updateAnalysisStage(stageId, options = {}) {
+  const stage = ANALYSIS_STAGES.find(item => item.id === stageId)
+  if (!stage) return
+  const nextIndex = analysisStageIndex(stage.id)
+  const currentIndex = analysisStageIndex(state.analysis.currentStageId)
+  if (nextIndex < currentIndex && !options.force) return
+  state.analysis.currentStageId = stage.id
+  state.analysis.note = options.note || stage.description
+  state.analysis.progress = Math.max(state.analysis.progress, options.progress ?? stage.targetProgress)
+  if (options.meta) state.analysis.meta = options.meta
+  renderAnalysisOverlay()
+}
+
+function startAnalysis(owner, repo) {
+  clearAnalysisTimers()
+  document.body.classList.remove('graph-ready')
+  state.analysis.requestId += 1
+  state.analysis.visible = true
+  state.analysis.currentStageId = 'validating'
+  state.analysis.progress = 4
+  state.analysis.note = ANALYSIS_STAGES[0].description
+  state.analysis.meta = `${owner}/${repo}`
+  state.analysis.mode = 'loading'
+  state.analysis.error = ''
+  state.analysis.startedAt = Date.now()
+  renderAnalysisOverlay()
+
+  // The backend currently responds with final payloads rather than streaming granular
+  // progress, so intermediate stages advance on elapsed time until real milestones land.
+  state.analysis.timer = window.setInterval(() => {
+    const elapsed = Date.now() - state.analysis.startedAt
+    const stage = analysisStageForElapsed(elapsed)
+    updateAnalysisStage(stage.id, { note: stage.description })
+    state.analysis.progress = Math.min(stage.targetProgress, state.analysis.progress + 0.75)
+    renderAnalysisOverlay()
+  }, 180)
+
+  return state.analysis.requestId
+}
+
+function finishAnalysis(requestId) {
+  if (requestId !== state.analysis.requestId) return
+  clearAnalysisTimers()
+  state.analysis.currentStageId = 'ready'
+  state.analysis.progress = 100
+  state.analysis.note = ANALYSIS_STAGES[analysisStageIndex('ready')].description
+  state.analysis.mode = 'ready'
+  renderAnalysisOverlay()
+  markGraphReadyHandoff()
+  state.analysis.handoffTimer = window.setTimeout(() => {
+    if (requestId !== state.analysis.requestId) return
+    state.analysis.visible = false
+    renderAnalysisOverlay()
+  }, 520)
+}
+
+function failAnalysis(requestId, message) {
+  if (requestId !== state.analysis.requestId) return
+  clearAnalysisTimers()
+  document.body.classList.remove('graph-ready')
+  state.analysis.visible = true
+  state.analysis.mode = 'error'
+  state.analysis.error = message || 'Failed to load repository graph.'
+  state.analysis.note = 'The repository could not be initialized for this view.'
+  state.analysis.progress = 100
+  renderAnalysisOverlay()
 }
 
 function currentRepoFromPath() {
@@ -1271,10 +1900,11 @@ function buildVisibleGraph() {
 }
 
 function nodeContext(nodeId) {
-  if (!nodeId || !state.visibleNodeIds.has(nodeId)) return { nodeIds: new Set(), edgeIds: new Set() }
+  if (!nodeId || !state.visibleNodeIds.has(nodeId)) return { nodeIds: new Set(), edgeIds: new Set(), primaryEdgeIds: new Set() }
   const node = fullGraph.nodesById.get(nodeId)
   const nodeIds = new Set([nodeId])
   const edgeIds = new Set()
+  const primaryEdgeIds = new Set()
   const visibleNeighbors = visibleGraph.adjacency.get(nodeId) || new Set()
   visibleNeighbors.forEach(neighborId => nodeIds.add(neighborId))
 
@@ -1285,12 +1915,15 @@ function nodeContext(nodeId) {
   }
 
   if ((node?.type === 'fn' || node?.type === 'comp') && node.parentId) nodeIds.add(node.parentId)
-  ;(visibleGraph.edgeIdsByNode.get(nodeId) || new Set()).forEach(edgeId => edgeIds.add(edgeId))
+  ;(visibleGraph.edgeIdsByNode.get(nodeId) || new Set()).forEach(edgeId => {
+    edgeIds.add(edgeId)
+    primaryEdgeIds.add(edgeId)
+  })
   nodeIds.forEach(relatedNodeId => {
     ;(visibleGraph.edgeIdsByNode.get(relatedNodeId) || new Set()).forEach(edgeId => edgeIds.add(edgeId))
   })
 
-  return { nodeIds, edgeIds }
+  return { nodeIds, edgeIds, primaryEdgeIds }
 }
 
 function shouldShowLabel(node) {
@@ -1322,15 +1955,40 @@ function labelOpacity(node, focusContext, previewContext) {
 
 function edgeOpacity(link, focusContext, previewContext) {
   const base = EDGE_STYLE[link.etype]?.opacity ?? 0.4
-  if (focusContext.edgeIds.size) return focusContext.edgeIds.has(link.id) ? Math.max(base, 0.88) : 0.05
-  if (previewContext.edgeIds.size) return previewContext.edgeIds.has(link.id) ? Math.max(base, 0.78) : 0.1
+  if (focusContext.edgeIds.size) return focusContext.edgeIds.has(link.id) ? Math.max(base, 0.96) : 0.025
+  if (previewContext.edgeIds.size) return previewContext.edgeIds.has(link.id) ? Math.max(base, 0.92) : 0.04
   return base
 }
 
 function edgeWidth(link, focusContext, previewContext) {
   const base = EDGE_STYLE[link.etype]?.width ?? 1
-  if (focusContext.edgeIds.has(link.id)) return base + 0.8
-  if (previewContext.edgeIds.has(link.id)) return base + 0.4
+  if (focusContext.primaryEdgeIds?.has(link.id)) return base + 1.2
+  if (previewContext.primaryEdgeIds?.has(link.id)) return base + 0.9
+  if (focusContext.edgeIds.has(link.id)) return base + 1.2
+  if (previewContext.edgeIds.has(link.id)) return base + 0.9
+  return base
+}
+
+function edgeStroke(link, focusContext, previewContext) {
+  const base = EDGE_STYLE[link.etype]?.stroke || '#55607a'
+  const isPrimaryFocused = focusContext.primaryEdgeIds?.has(link.id)
+  const isPrimaryPreviewed = previewContext.primaryEdgeIds?.has(link.id)
+  const isFocused = focusContext.edgeIds.has(link.id)
+  const isPreviewed = previewContext.edgeIds.has(link.id)
+  if (!isFocused && !isPreviewed) return base
+
+  if (isPrimaryFocused) return '#f4c84a'
+  if (isPrimaryPreviewed) return '#e6b93b'
+
+  const color = d3.color(base)
+  if (!color) return base
+  const brighterBy = isFocused ? 0.95 : 0.65
+  return color.brighter(brighterBy).formatHex()
+}
+
+function edgeDash(link, focusContext, previewContext) {
+  const base = EDGE_STYLE[link.etype]?.dash || null
+  if (focusContext.edgeIds.has(link.id) || previewContext.edgeIds.has(link.id)) return null
   return base
 }
 
@@ -1727,19 +2385,18 @@ function renderDetailPanel() {
   const activeNode = state.activeNodeId ? fullGraph.nodesById.get(state.activeNodeId) : null
   const statusNode = document.getElementById('detail-status')
   const contentNode = document.getElementById('detail-content')
-  const inspectorMode = document.getElementById('inspector-mode')
 
-  if (inspectorMode) inspectorMode.textContent = activeNode ? `${activeNode.type} focus` : 'Overview'
-  statusNode.innerHTML = `
+  setInspectorMode(activeNode ? `${activeNode.type} focus` : 'Overview')
+  swapNodeContent(statusNode, `
     <div class="section-label">State</div>
     <div class="status-copy">${escapeHtml(activeNode ? `${activeNode.label} is in focus. Nearby structure remains bright while unrelated regions fall back, so the local chain reads first.` : overviewNotice())}</div>
-  `
+  `)
 
   if (!activeNode) {
-    contentNode.innerHTML = `
+    swapNodeContent(contentNode, `
       <div class="section-label">Selection</div>
       <div class="detail-title">
-        <span class="detail-pill">Overview</span>
+        <span class="detail-pill shell-chip">Overview</span>
         <div class="detail-name">${escapeHtml(state.repo ? `${state.repo.owner}/${state.repo.repo}` : 'Repository map')}</div>
       </div>
       <div class="detail-subtitle">${escapeHtml(overviewSubtitle())}</div>
@@ -1758,7 +2415,7 @@ function renderDetailPanel() {
           <span class="detail-chip">Files outside the first overview appear when you search or focus into them</span>
         </div>
       </div>
-    `
+    `)
     return
   }
 
@@ -1814,10 +2471,10 @@ function renderDetailPanel() {
     ]
   }
 
-  contentNode.innerHTML = `
+  swapNodeContent(contentNode, `
     <div class="section-label">Selection</div>
     <div class="detail-title">
-      <span class="detail-pill">${escapeHtml(activeNode.type)}</span>
+      <span class="detail-pill shell-chip">${escapeHtml(activeNode.type)}</span>
       <div class="detail-name">${escapeHtml(activeNode.label)}</div>
     </div>
     <div class="detail-subtitle">${escapeHtml(activeNode.fullPath || activeNode.fileId || activeNode.id)}</div>
@@ -1837,12 +2494,12 @@ function renderDetailPanel() {
           : '<div class="detail-empty">None surfaced in the current view.</div>'}
       </div>
     `).join('')}
-  `
+  `)
 }
 
 function applyVisualState() {
   const focusContext = nodeContext(state.activeNodeId)
-  const previewContext = state.activeNodeId ? { nodeIds: new Set(), edgeIds: new Set() } : nodeContext(state.hoveredNodeId)
+  const previewContext = state.activeNodeId ? { nodeIds: new Set(), edgeIds: new Set(), primaryEdgeIds: new Set() } : nodeContext(state.hoveredNodeId)
 
   nodeLayer.selectAll('.node')
     .style('opacity', node => nodeOpacity(node, focusContext, previewContext))
@@ -1858,6 +2515,8 @@ function applyVisualState() {
 
   linkLayer.selectAll('.link')
     .style('opacity', link => edgeOpacity(link, focusContext, previewContext))
+    .attr('stroke', link => edgeStroke(link, focusContext, previewContext))
+    .attr('stroke-dasharray', link => edgeDash(link, focusContext, previewContext))
     .attr('stroke-width', link => edgeWidth(link, focusContext, previewContext))
 
   const activeSelection = state.activeNodeId
@@ -2132,12 +2791,11 @@ async function runSearch(query) {
     state.activeNodeId = null
     state.hoveredNodeId = null
     rerender(0)
-    document.getElementById('detail-status').innerHTML = `
+    swapNodeContent(document.getElementById('detail-status'), `
       <div class="section-label">State</div>
       <div class="status-copy">No match for "${escapeHtml(query)}". Search targets files, routes, and hidden function or component nodes. Hidden matches expand their parent file automatically.</div>
-    `
-    const inspectorMode = document.getElementById('inspector-mode')
-    if (inspectorMode) inspectorMode.textContent = 'Search'
+    `)
+    setInspectorMode('Search')
     return
   }
   if (match.type === 'file') {
@@ -2152,21 +2810,21 @@ async function runSearch(query) {
 }
 
 function setStatus(message) {
-  document.getElementById('detail-status').innerHTML = `
+  swapNodeContent(document.getElementById('detail-status'), `
     <div class="section-label">State</div>
     <div class="status-copy">${escapeHtml(message)}</div>
-  `
+  `)
 }
 
 function setEmptyDetail(title, subtitle) {
-  document.getElementById('detail-content').innerHTML = `
+  swapNodeContent(document.getElementById('detail-content'), `
     <div class="section-label">Selection</div>
     <div class="detail-title">
-      <span class="detail-pill">Overview</span>
+      <span class="detail-pill shell-chip">Overview</span>
       <div class="detail-name">${escapeHtml(title)}</div>
     </div>
     <div class="detail-subtitle">${escapeHtml(subtitle)}</div>
-  `
+  `)
 }
 
 function setupSpotlight() {
@@ -2179,6 +2837,7 @@ function setupSpotlight() {
 }
 
 async function loadRepo(owner, repo) {
+  const requestId = startAnalysis(owner, repo)
   state.repo = { owner, repo }
   updateRepoLabel(state.repo)
   document.getElementById('search').value = ''
@@ -2189,16 +2848,29 @@ async function loadRepo(owner, repo) {
     const indexResponse = await fetch(`/api/discover/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/index`)
     const index = await indexResponse.json()
     if (!indexResponse.ok) throw new Error(index.detail || `Request failed with status ${indexResponse.status}`)
+    if (requestId !== state.analysis.requestId) return
+    updateAnalysisStage('preparing', {
+      progress: 88,
+      note: 'Overview data is ready. Loading route and compatibility chunks next.',
+      meta: `${owner}/${repo} • ${index?.overview?.file_count || index?.nodes?.length || 'overview'} loaded`,
+    })
 
     const routesResponse = await fetch(`/api/discover/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/chunk/chunk_routes`)
     const routesChunk = await routesResponse.json()
     if (!routesResponse.ok) throw new Error(routesChunk.detail || `Chunk request failed with status ${routesResponse.status}`)
+    if (requestId !== state.analysis.requestId) return
+    updateAnalysisStage('rendering', {
+      progress: 96,
+      note: 'Repository data is ready. Rendering the graph workspace.',
+    })
 
     buildOverviewGraph(index, routesChunk)
     setupSVG()
     rerender(0.18)
+    await new Promise(resolve => window.requestAnimationFrame(() => resolve()))
     setStatus(overviewNotice())
     setEmptyDetail(`${owner}/${repo}`, overviewSubtitle())
+    finishAnalysis(requestId)
     const loadedRepoKey = `${owner}/${repo}`
     preloadVisibleFileDetails().then(() => {
       const activeRepoKey = state.repo ? `${state.repo.owner}/${state.repo.repo}` : ''
@@ -2210,6 +2882,7 @@ async function loadRepo(owner, repo) {
     if (svg) svg.selectAll('*').remove()
     setStatus(error.message || 'Failed to load repository graph.')
     setEmptyDetail('Load failed', 'The graph could not be initialized for this repository.')
+    failAnalysis(requestId, error.message || 'Failed to load repository graph.')
   }
 }
 
@@ -2258,6 +2931,20 @@ function init() {
   updateRepoLabel(null)
   setStatus('Open /owner/repo to load a repository graph.')
   setEmptyDetail('Repository map', 'Primary file nodes and route bridges appear after a repository is loaded.')
+  renderAnalysisOverlay()
+
+  document.getElementById('analysis-overlay').addEventListener('click', event => {
+    const action = event.target.closest('[data-analysis-action]')?.dataset.analysisAction
+    if (!action) return
+    if (action === 'dismiss') {
+      state.analysis.visible = false
+      renderAnalysisOverlay()
+      return
+    }
+    if (action === 'retry' && state.repo) {
+      loadRepo(state.repo.owner, state.repo.repo)
+    }
+  })
 
   const repo = currentRepoFromPath()
   if (repo) loadRepo(repo.owner, repo.repo)
