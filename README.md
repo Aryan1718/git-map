@@ -1,4 +1,4 @@
-# GIT-MAP
+<h1 align="center">GIT-MAP</h1>
 
 <p align="center">
   <strong>Swap <code>github.com</code> for <code>git-map.com</code> and turn any public repo into a living code graph.</strong>
