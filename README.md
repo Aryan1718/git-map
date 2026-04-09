@@ -6,7 +6,11 @@
 
 <p align="center">
   <a href="https://git-map.com"><img src="https://img.shields.io/badge/try-git--map.com-blue?style=flat-square" alt="Try GIT-MAP"></a>
-  <a href="https://github.com/csuftitan/github-kb/stargazers"><img src="https://img.shields.io/github/stars/csuftitan/github-kb?style=flat-square" alt="Stars"></a>
+  <a href="#"><img src="https://img.shields.io/badge/backend-FastAPI-009688?style=flat-square" alt="FastAPI"></a>
+  <a href="#"><img src="https://img.shields.io/badge/frontend-React%20%2B%20D3-222222?style=flat-square" alt="React and D3"></a>
+  <a href="#"><img src="https://img.shields.io/badge/parser-Aider%20RepoMap-orange?style=flat-square" alt="Aider RepoMap"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.12-blue.svg?style=flat-square" alt="Python 3.10+"></a>
+  <a href="#"><img src="https://img.shields.io/badge/status-active-success?style=flat-square" alt="Status"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square" alt="MIT License"></a>
 </p>
 
