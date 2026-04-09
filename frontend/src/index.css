@@ -42,6 +42,109 @@ a {
   min-height: 100vh;
 }
 
+.repo-loader-shell {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.repo-loader-shell #particles-background,
+.repo-loader-shell #particles-foreground {
+  position: absolute;
+  inset: 0;
+}
+
+.repo-loader-shell > .vertical-centered-box:last-child {
+  position: absolute;
+  inset: 0;
+  text-align: center;
+}
+
+.repo-loader-shell > .vertical-centered-box:last-child::after {
+  content: "";
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -0.25em;
+}
+
+.repo-loader-shell > .vertical-centered-box:last-child .content {
+  box-sizing: border-box;
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  width: 120px;
+  height: 120px;
+  text-align: left;
+  font-size: 0;
+}
+
+.repo-loader-shell .loader-circle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 120px;
+  height: 120px;
+  margin-left: -60px;
+  margin-top: -60px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.repo-loader-shell .loader-line-mask {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 60px;
+  height: 120px;
+  margin-left: -60px;
+  margin-top: -60px;
+  overflow: hidden;
+  transform-origin: 60px 60px;
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+  animation: repo-loader-rotate 1.2s linear infinite;
+}
+
+.repo-loader-shell .loader-line {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.repo-loader-shell svg {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 36px;
+  height: 24px;
+  margin-left: -18px;
+  margin-top: -12px;
+}
+
+.repo-loader-shell #particles-background {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(76, 104, 255, 0.14), transparent 24%),
+    radial-gradient(circle at 82% 14%, rgba(25, 212, 197, 0.08), transparent 22%),
+    radial-gradient(circle at 50% 100%, rgba(138, 132, 247, 0.08), transparent 30%),
+    linear-gradient(180deg, #08111d 0%, #050914 100%);
+}
+
+.repo-loader-shell #particles-foreground {
+  opacity: 1;
+}
+
+@keyframes repo-loader-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .glass-panel {
   background: linear-gradient(180deg, rgba(17, 24, 39, 0.78), rgba(15, 23, 42, 0.52));
   border: 1px solid var(--border);
