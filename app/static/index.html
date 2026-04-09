@@ -1612,69 +1612,10 @@ function clearAnalysisTimers() {
 function renderAnalysisOverlay() {
   const overlay = document.getElementById('analysis-overlay')
   if (!overlay) return
-
-  const progress = Math.max(0, Math.min(100, Math.round(state.analysis.progress)))
-  const currentIndex = analysisStageIndex(state.analysis.currentStageId)
-  const isError = state.analysis.mode === 'error'
-  const isReady = state.analysis.mode === 'ready'
-  const title = isError ? 'Analysis interrupted' : isReady ? 'Graph ready' : 'Analyzing repository'
-  const copy = isError ? (state.analysis.error || 'The repository could not be analyzed.') : state.analysis.note
-  const meta = state.analysis.meta || (state.repo ? `${state.repo.owner}/${state.repo.repo}` : 'Waiting for repository path')
-
-  overlay.innerHTML = `
-    <div class="analysis-card">
-      <div class="analysis-topbar">
-        <div>
-          <div class="analysis-kicker">Repository analysis</div>
-          <div class="analysis-title">${escapeHtml(title)}</div>
-          <div class="analysis-copy">${escapeHtml(copy)}</div>
-        </div>
-        <div class="analysis-badge">${progress}%</div>
-      </div>
-      <div class="analysis-progress">
-        <div class="analysis-progress__track">
-          <div class="analysis-progress__bar" style="width:${progress}%"></div>
-        </div>
-        <div class="analysis-progress__meta">
-          <span>${escapeHtml(meta)}</span>
-          <span>${escapeHtml(isError ? 'Load failed' : state.analysis.mode === 'loading' ? 'Live analysis' : 'Ready')}</span>
-        </div>
-      </div>
-      <div class="analysis-steps">
-        ${analysisStepSequence().map((stage, index) => {
-          const isComplete = isReady || currentIndex > index
-          const isCurrent = !isError && state.analysis.currentStageId === stage.id
-          const stateClass = isCurrent ? 'is-current' : isComplete ? 'is-complete' : 'is-upcoming'
-          return `
-            <div class="analysis-step ${stateClass}">
-              <div class="analysis-step__dot">${isComplete ? '&#10003;' : index + 1}</div>
-              <div class="analysis-step__body">
-                <div class="analysis-step__title">
-                  <span>${escapeHtml(stage.label)}</span>
-                  ${isCurrent ? '<span class="analysis-step__pulse" aria-hidden="true"></span>' : ''}
-                </div>
-                <div class="analysis-step__copy">${escapeHtml(stage.description)}</div>
-              </div>
-            </div>
-          `
-        }).join('')}
-      </div>
-      ${isError ? `
-        <div class="analysis-actions">
-          <button type="button" class="analysis-button analysis-button--primary" data-analysis-action="retry">Retry analysis</button>
-          <button type="button" class="analysis-button" data-analysis-action="dismiss">Dismiss</button>
-        </div>
-      ` : `
-        <div class="analysis-footer">${escapeHtml(isReady ? 'The graph is loaded and interactions are active again.' : 'Stages follow the current loading lifecycle and tighten into real milestones as backend data arrives.')}</div>
-      `}
-    </div>
-  `
-
-  overlay.classList.toggle('is-visible', state.analysis.visible)
-  overlay.classList.toggle('is-ready', isReady)
-  overlay.classList.toggle('is-error', isError)
-  overlay.setAttribute('aria-hidden', state.analysis.visible ? 'false' : 'true')
-  document.body.classList.toggle('analysis-active', state.analysis.visible)
+  overlay.innerHTML = ''
+  overlay.classList.remove('is-visible', 'is-ready', 'is-error')
+  overlay.setAttribute('aria-hidden', 'true')
+  document.body.classList.remove('analysis-active')
 }
 
 function updateAnalysisStage(stageId, options = {}) {
