@@ -44,6 +44,10 @@ function Graph() {
   }, [owner, repo]);
 
   useEffect(() => {
+    setFrameLoaded(false);
+  }, [owner, repo]);
+
+  useEffect(() => {
     if (frameLoaded || !loaderRef.current) {
       return undefined;
     }
