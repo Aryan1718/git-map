@@ -1,29 +1,23 @@
 <h1 align="center">GIT-MAP</h1>
 
-<hr>
-
 <p align="center">
   <strong>Turn any public GitHub repository into an interactive knowledge graph.</strong>
 </p>
 
 <p align="center">
-  <strong>Swap <code>github.com</code> for <code>git-map.com</code> and turn any public repo into a living code graph.</strong>
+  <a href="https://git-map.com"><img src="https://img.shields.io/badge/website-git--map.com-blue?style=flat-square" alt="Website"></a>
+  <a href="https://github.com/csuftitan/github-kb/stargazers"><img src="https://img.shields.io/github/stars/csuftitan/github-kb?style=flat-square" alt="Stars"></a>
+  <a href="#"><img src="https://img.shields.io/badge/backend-FastAPI-009688?style=flat-square" alt="FastAPI"></a>
+  <a href="#"><img src="https://img.shields.io/badge/frontend-React%20%2B%20D3-222222?style=flat-square" alt="React and D3"></a>
+  <a href="#"><img src="https://img.shields.io/badge/parser-Aider%20RepoMap-orange?style=flat-square" alt="Aider RepoMap"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10%2B-blue.svg?style=flat-square" alt="Python 3.10+"></a>
+  <a href="#"><img src="https://img.shields.io/badge/status-active-success?style=flat-square" alt="Status"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square" alt="MIT License"></a>
 </p>
 
-<p align="center">
-  <strong>GIT-MAP</strong> pulls a repository through the GitHub API, extracts structure with <strong>RepoMap + Tree-sitter</strong>,
-  and renders the result as an <strong>interactive graph</strong> in the browser.
-</p>
+<br>
 
-<p align="center">
-  <code>https://github.com/twbs/bootstrap</code><br/>
-  becomes<br/>
-  <code>https://git-map.com/twbs/bootstrap</code>
-</p>
-
-
-
-Example:
+GIT-MAP analyzes a GitHub repository with the GitHub API, extracts structural symbols with Aider RepoMap and Tree-sitter, and returns a graph that can be explored visually in the browser. Instead of scanning raw files manually, you get a map of files, definitions, and cross-file relationships.
 
 <p align="center">
   <img src="docs/git-map.gif" alt="GIT-MAP demo" width="88%" />
