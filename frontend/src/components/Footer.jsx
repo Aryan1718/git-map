@@ -7,7 +7,7 @@ function Footer() {
           <p className="mt-1">Interactive knowledge graphs for repositories, built from structural code parsing.</p>
         </div>
         <a
-          href="https://github.com/your-org/git-map"
+          href="https://github.com/Aryan1718/git-map"
           target="_blank"
           rel="noreferrer"
           className="inline-flex items-center gap-2 text-slate-300 transition hover:text-white"
