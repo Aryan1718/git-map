@@ -34,11 +34,11 @@ function Hero() {
               <LayoutTextFlip
                 text="https://"
                 words={["github.com", "git-map.com"]}
-                suffix="/facebook/react"
+                suffix="/Aryan1718/md2LLM"
               />
               <a
-                href="/facebook/react"
-                aria-label="Open facebook/react graph"
+                href="/Aryan1718/md2LLM"
+                aria-label="Open Aryan1718/md2LLM graph"
                 className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.03] text-slate-400 transition hover:bg-white/[0.07] hover:text-slate-100"
               >
                 <span aria-hidden="true" className="text-sm leading-none">
